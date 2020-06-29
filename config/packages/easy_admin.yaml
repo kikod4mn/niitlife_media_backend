@@ -1,0 +1,54 @@
+easy_admin:
+    
+    edit:
+        title: '%%entity_label%%_edit'
+    
+    new:
+        title: 'New %%entity_label%%'
+    
+    entities:
+        Image:
+            class: App\Entity\Image
+            form:
+                fields: []
+        
+        ImageCategory:
+            class: App\Entity\ImageCategory
+            form:
+                fields: []
+        
+        ImageComment:
+            class: App\Entity\ImageComment
+            form:
+                fields: []
+        
+        Post:
+            class: App\Entity\Post
+            form:
+                fields: []
+        
+        PostCategory:
+            class: App\Entity\PostCategory
+            form:
+                fields: []
+        
+        PostComment:
+            class: App\Entity\PostComment
+            form:
+                fields: []
+        
+        Tag:
+            class: App\Entity\Tag
+            form:
+                fields: []
+        
+        User:
+            class: App\Entity\User
+            form:
+                fields:
+                    - { property: 'uuid', type: string, type_options: { disabled: true, read_only: true } }
+        
+        UserProfile:
+            class: App\Entity\UserProfile
+            form:
+                fields: []
