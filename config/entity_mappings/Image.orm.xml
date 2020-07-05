@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<doctrine-mapping xmlns="http://doctrine-project.org/schemas/orm/doctrine-mapping"
+                  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                  xsi:schemaLocation="http://doctrine-project.org/schemas/orm/doctrine-mapping
+        https://doctrine-project.org/schemas/orm/doctrine-mapping.xsd">
+
+    <entity name="App\Entity\Image" repository-class="App\Repository\ImageRepository">
+
+        <unique-constraints>
+            <unique-constraint columns="id,slug"/>
+        </unique-constraints>
+
+        <id name="id" column="id" type="uuid">
+            <generator strategy="CUSTOM"/>
+            <custom-id-generator class="Ramsey\Uuid\Doctrine\UuidGenerator"/>
+        </id>
+
+        <field name="title" type="text" length="255"/>
+        <field name="slug" type="text" length="255" unique="true"/>
+        <field name="description" type="text"/>
+        <field name="original" type="text" length="500"/>
+        <field name="thumbnail" type="text" length="500"/>
+        <field name="publishedAt" type="datetime" nullable="true"/>
+        <field name="createdAt" type="datetime"/>
+        <field name="updatedAt" type="datetime" nullable="true"/>
+        <field name="trashedAt" type="datetime" nullable="true"/>
+        <field name="likeCount" type="bigint"/>
+        <field name="weeklyLikeCount" type="bigint"/>
+        <field name="viewCount" type="bigint"/>
+        <field name="weeklyViewCount" type="bigint"/>
+        <field name="monthlyViewCount" type="bigint"/>
+
+        <many-to-one field="category" target-entity="App\Entity\ImageCategory" inversed-by="images">
+            <join-column name="category_id" nullable="false"/>
+        </many-to-one>
+
+        <many-to-one field="author" target-entity="App\Entity\User" inversed-by="images">
+            <join-column name="author_id" nullable="false"/>
+        </many-to-one>
+
+        <one-to-many field="comments" target-entity="App\Entity\ImageComment" mapped-by="image">
+            <order-by>
+                <order-by-field name="createdAt" direction="DESC"/>
+            </order-by>
+        </one-to-many>
+
+        <many-to-many field="likedBy" target-entity="App\Entity\User" inversed-by="imagesLiked">
+            <join-table name="image_likes">
+                <join-columns>
+                    <join-column name="image_id" nullable="false"/>
+                </join-columns>
+                <inverse-join-columns>
+                    <join-column name="user_id" nullable="false"/>
+                </inverse-join-columns>
+            </join-table>
+        </many-to-many>
+
+        <many-to-many field="tags" target-entity="App\Entity\Tag" inversed-by="images">
+            <join-table name="image_tags">
+                <join-columns>
+                    <join-column name="image_id" nullable="false"/>
+                </join-columns>
+                <inverse-join-columns>
+                    <join-column name="tag_id" nullable="false"/>
+                </inverse-join-columns>
+            </join-table>
+        </many-to-many>
+
+    </entity>
+
+</doctrine-mapping>

@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<constraint-mapping xmlns="http://symfony.com/schema/dic/constraint-mapping"
+                    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                    xsi:schemaLocation="http://symfony.com/schema/dic/constraint-mapping
+        https://symfony.com/schema/dic/constraint-mapping/constraint-mapping-1.0.xsd">
+
+    <class name="App\Entity\Post">
+
+        <property name="title">
+            <constraint name="NotBlank"/>
+            <constraint name="Length">
+                <option name="min">15</option>
+                <option name="max">255</option>
+                <option name="minMessage">
+                    Post title must be at least {{ limit }} characters long.
+                </option>
+                <option name="maxMessage">
+                    Post title cannot exceed {{ limit }} characters.
+                </option>
+            </constraint>
+        </property>
+
+        <property name="body">
+            <constraint name="NotBlank"/>
+            <constraint name="Length">
+                <option name="min">150</option>
+                <option name="minMessage">
+                    Post title must be at least {{ limit }} characters long.
+                </option>
+            </constraint>
+        </property>
+
+        <property name="category">
+            <constraint name="NotBlank"/>
+        </property>
+
+    </class>
+
+</constraint-mapping>

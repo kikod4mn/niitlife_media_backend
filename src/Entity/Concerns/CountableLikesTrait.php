@@ -4,18 +4,14 @@ declare(strict_types = 1);
 
 namespace App\Entity\Concerns;
 
-use Doctrine\ORM\Mapping as ORM;
-
 trait CountableLikesTrait
 {
 	/**
-	 * @ORM\Column(type="bigint", nullable=false)
 	 * @var int
 	 */
 	protected int $likeCount = 0;
 	
 	/**
-	 * @ORM\Column(type="bigint", nullable=false)
 	 * @var int
 	 */
 	protected int $weeklyLikeCount = 0;

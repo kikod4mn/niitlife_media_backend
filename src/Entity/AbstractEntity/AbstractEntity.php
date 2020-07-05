@@ -9,6 +9,8 @@ use App\Entity\Contracts\Uuidable;
 
 abstract class AbstractEntity implements Uuidable, \Stringable, \JsonSerializable
 {
+	use UuidableTrait;
+	
 	/**
 	 * Default name for created at timestamp field.
 	 * @var string
@@ -22,11 +24,8 @@ abstract class AbstractEntity implements Uuidable, \Stringable, \JsonSerializabl
 	const UPDATED_AT = 'updatedAt';
 	
 	/**
-	 * Default allowed HTML tags.
-	 * @var string
+	 * @return string
 	 */
-	const DEFAULT_HTML_TAGS = 'p,strong,i,a[href]';
-	
 	public function __toString(): string
 	{
 		return (string) $this->getId();

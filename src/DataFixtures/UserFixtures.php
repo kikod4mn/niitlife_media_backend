@@ -32,7 +32,7 @@ class UserFixtures extends BaseFixture
 	protected function loadData(ObjectManager $manager): void
 	{
 		$this->createMany(
-			User::class, 1, function (User $user, $i) {
+			User::class, 1, function (User $user, $i) use ($manager) {
 			
 			$user->setUsername('kiko');
 			$user->setFullname('kiko kikopolis');
@@ -45,12 +45,14 @@ class UserFixtures extends BaseFixture
 			$user->setProfile($profile);
 			$profile->setUser($user);
 			$profile->setAvatar('images/defaultUserAvatar/defaultAvatar.jpg');
+			
+			$manager->persist($profile);
 		}
 		);
 		
 		$faker = Factory::create();
 		$this->createMany(
-			User::class, 40, function (User $user, $i) use ($faker) {
+			User::class, 40, function (User $user, $i) use ($faker, $manager) {
 			$user->setUsername($faker->userName);
 			$user->setFullname($faker->name);
 			$user->setEmail($faker->email);
@@ -61,6 +63,8 @@ class UserFixtures extends BaseFixture
 			$user->setProfile($profile);
 			$profile->setUser($user);
 			$profile->setAvatar('images/defaultUserAvatar/defaultAvatar.jpg');
+			
+			$manager->persist($profile);
 		}
 		);
 		

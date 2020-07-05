@@ -4,24 +4,19 @@ declare(strict_types = 1);
 
 namespace App\Entity\Concerns;
 
-use Doctrine\ORM\Mapping as ORM;
-
 trait CountableViewsTrait
 {
 	/**
-	 * @ORM\Column(type="bigint", nullable=false)
 	 * @var int
 	 */
 	protected int $viewCount = 0;
 	
 	/**
-	 * @ORM\Column(type="bigint", nullable=false)
 	 * @var int
 	 */
 	protected int $weeklyViewCount = 0;
 	
 	/**
-	 * @ORM\Column(type="bigint", nullable=false)
 	 * @var int
 	 */
 	protected int $monthlyViewCount = 0;

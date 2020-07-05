@@ -4,7 +4,9 @@ declare(strict_types = 1);
 
 namespace App\Support;
 
+use DOMDocument;
 use Exception;
+use HtmlSanitizer\Sanitizer;
 use Ramsey\Uuid\Codec\TimestampFirstCombCodec;
 use Ramsey\Uuid\Generator\CombGenerator;
 use Ramsey\Uuid\Uuid;
@@ -669,5 +671,45 @@ class Str
 	public static function createUuidsNormally(): void
 	{
 		static::$uuidFactory = null;
+	}
+	
+	/**
+	 * @param  string  $html
+	 * @return string
+	 */
+	public static function clean(string $html): string
+	{
+		$sanitizer = Sanitizer::create(
+			[
+				'max_input_length' => 30000,
+				'extensions'       => ['basic', 'list', 'table', 'image', 'details', 'extra'],
+			]
+		);
+		
+		return $sanitizer->sanitize(self::stripJS($html));
+	}
+	
+	/**
+	 * @param  string  $html
+	 * @return string
+	 */
+	public static function purify(string $html): string
+	{
+		$sanitizer = Sanitizer::create(
+			[
+				'max_input_length' => 30000,
+			]
+		);
+		
+		return $sanitizer->sanitize(self::stripJS($html));
+	}
+	
+	/**
+	 * @param  string  $html
+	 * @return string
+	 */
+	public static function stripJS(string $html): string
+	{
+		return preg_replace('#<(.*)script(.*)>(.*)<(.*)/(.*)script(.*)>#i', '', $html);
 	}
 }

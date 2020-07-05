@@ -4,12 +4,9 @@ declare(strict_types = 1);
 
 namespace App\EventSubscriber;
 
-use ApiPlatform\Core\EventListener\EventPriorities;
 use App\Entity\Contracts\Uuidable;
+use App\Entity\Event\UuidableCreatedEvent;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
-use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpKernel\Event\ViewEvent;
-use Symfony\Component\HttpKernel\KernelEvents;
 
 class UuidableEntitySubscriber implements EventSubscriberInterface
 {
@@ -19,24 +16,18 @@ class UuidableEntitySubscriber implements EventSubscriberInterface
 	public static function getSubscribedEvents(): array
 	{
 		return [
-			KernelEvents::VIEW => ['generateUuid', EventPriorities::PRE_WRITE],
+			UuidableCreatedEvent::class => ['generateUuid', 999],
 		];
 	}
 	
 	/**
-	 * @param  ViewEvent  $event
+	 * @param  UuidableCreatedEvent  $event
 	 */
-	public function generateUuid(ViewEvent $event): void
+	public function generateUuid(UuidableCreatedEvent $event): void
 	{
-		$entity = $event->getControllerResult();
-		$method = $event->getRequest()->getMethod();
+		$entity = $event->getEntity();
 		
-		if (! $entity instanceof Uuidable || Request::METHOD_POST !== $method) {
-			
-			return;
-		}
-		
-		if ($entity->getId() === null) {
+		if ($entity->getId() === null && $entity instanceof Uuidable) {
 			
 			$entity->generateUuid();
 		}

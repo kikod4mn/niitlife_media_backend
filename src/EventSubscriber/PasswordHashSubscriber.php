@@ -4,7 +4,6 @@ declare(strict_types = 1);
 
 namespace App\EventSubscriber;
 
-use ApiPlatform\Core\EventListener\EventPriorities;
 use App\Entity\User;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\HttpFoundation\Request;
@@ -34,7 +33,7 @@ class PasswordHashSubscriber implements EventSubscriberInterface
 	public static function getSubscribedEvents(): array
 	{
 		return [
-			KernelEvents::VIEW => ['hashPassword', EventPriorities::PRE_WRITE],
+			KernelEvents::VIEW => ['hashPassword', 999],
 		];
 	}
 	

@@ -7,8 +7,6 @@ namespace App\Entity\Concerns;
 use Crudle\Profanity\Dictionary\GB;
 use Crudle\Profanity\Dictionary\US;
 use Crudle\Profanity\Filter;
-use HTMLPurifier;
-use HTMLPurifier_Config;
 
 trait FilterProfanitiesTrait
 {
@@ -24,44 +22,9 @@ trait FilterProfanitiesTrait
 			return $text;
 		}
 		
-		return $this->filterHTML(
-			$this->filterProfanities(
-				$text
-			)
+		return $this->filterProfanities(
+			$text
 		);
-	}
-	
-	/**
-	 * Filter out HTML tags, allowed tags are kept.
-	 * @param  string  $text
-	 * @return string
-	 */
-	protected function filterHTML(string $text): string
-	{
-		return $this->htmlPurifier()->purify($text);
-	}
-	
-	/**
-	 * Return a new html purifier with configuration.
-	 * @return HTMLPurifier
-	 */
-	protected function htmlPurifier(): HTMLPurifier
-	{
-		$config = HTMLPurifier_Config::createDefault();
-		$config->set('HTML.Allowed', $this->allowedHtmlTags());
-		
-		return new HTMLPurifier($config);
-	}
-	
-	/**
-	 * Get the custom allowed tags with defaults or return just defaults.
-	 * @return string
-	 */
-	protected function allowedHtmlTags(): string
-	{
-		return defined('static::HTML_TAGS_ALLOWED')
-			? implode(',', static::HTML_TAGS_ALLOWED) . ',' . static::DEFAULT_HTML_TAGS
-			: static::DEFAULT_HTML_TAGS;
 	}
 	
 	/**

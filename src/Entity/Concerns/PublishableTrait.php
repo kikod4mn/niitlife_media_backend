@@ -6,14 +6,10 @@ namespace App\Entity\Concerns;
 
 use App\Entity\Contracts\Publishable;
 use DateTimeInterface;
-use Doctrine\ORM\Mapping as ORM;
-use Symfony\Component\Serializer\Annotation\Groups;
 
 trait PublishableTrait
 {
 	/**
-	 * @ORM\Column(type="datetime", nullable=true)
-	 * @Groups({"get-post-with-comments"})
 	 * @var DateTimeInterface
 	 */
 	protected ?DateTimeInterface $publishedAt = null;

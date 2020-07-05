@@ -1,0 +1,208 @@
+<?xml version="1.0" ?>
+<serializer xmlns="http://symfony.com/schema/dic/serializer-mapping"
+            xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+            xsi:schemaLocation="http://symfony.com/schema/dic/serializer-mapping
+        https://symfony.com/schema/dic/serializer-mapping/serializer-mapping-1.0.xsd"
+>
+
+    <class name="App\Entity\Post">
+
+        <attribute name="id">
+            <group>post:list</group>
+            <group>post:read</group>
+        </attribute>
+
+        <attribute name="title">
+            <group>post:write</group>
+            <group>post:update</group>
+            <group>post:list</group>
+            <group>post:read</group>
+        </attribute>
+
+        <attribute name="slug">
+            <group>post:list</group>
+            <group>post:read</group>
+        </attribute>
+
+        <attribute name="body">
+            <group>post:write</group>
+            <group>post:update</group>
+            <group>post:list</group>
+            <group>post:read</group>
+        </attribute>
+
+        <attribute name="category">
+            <group>post:write</group>
+            <group>post:update</group>
+            <group>post:list</group>
+            <group>post:read</group>
+        </attribute>
+
+        <attribute name="author">
+            <group>post:list</group>
+            <group>post:read</group>
+        </attribute>
+
+        <attribute name="likeCount">
+            <group>post:list</group>
+            <group>post:read</group>
+        </attribute>
+
+        <attribute name="viewCount">
+            <group>post:list</group>
+            <group>post:read</group>
+        </attribute>
+
+        <attribute name="tags">
+            <group>post:list</group>
+            <group>post:read</group>
+            <group>post:write</group>
+            <group>post:update</group>
+        </attribute>
+
+        <attribute name="comments">
+            <group>post:read</group>
+        </attribute>
+
+        <attribute name="createdAt">
+            <group>post:list</group>
+            <group>post:read</group>
+        </attribute>
+
+    </class>
+
+    <class name="App\Entity\PostCategory">
+
+        <attribute name="id">
+            <group>post:list</group>
+            <group>post:read</group>
+            <group>postCategory:list</group>
+            <group>postCategory:read</group>
+        </attribute>
+
+        <attribute name="title">
+            <group>post:list</group>
+            <group>post:read</group>
+            <group>postCategory:list</group>
+            <group>postCategory:read</group>
+            <group>postCategory:write</group>
+            <group>postCategory:update</group>
+        </attribute>
+
+    </class>
+
+    <class name="App\Entity\PostComment">
+
+        <attribute name="id">
+            <group>comment:read</group>
+            <group>post:read</group>
+        </attribute>
+
+        <attribute name="body">
+            <group>comment:write</group>
+            <group>comment:update</group>
+            <group>comment:read</group>
+            <group>post:read</group>
+        </attribute>
+
+        <attribute name="post">
+            <group>comment:write</group>
+        </attribute>
+
+        <attribute name="author">
+            <group>post:read</group>
+            <group>comment:read</group>
+        </attribute>
+
+        <attribute name="likedBy">
+            <group>comment:read</group>
+        </attribute>
+
+        <attribute name="likeCount">
+            <group>post:list</group>
+            <group>post:read</group>
+        </attribute>
+
+        <attribute name="createdAt">
+            <group>post:list</group>
+            <group>post:read</group>
+        </attribute>
+
+        <attribute name="updatedAt">
+            <group>post:list</group>
+            <group>post:read</group>
+        </attribute>
+
+    </class>
+
+    <class name="App\Entity\Tag">
+
+        <attribute name="id">
+            <group>post:list</group>
+            <group>post:read</group>
+            <group>tag:read</group>
+        </attribute>
+
+        <attribute name="title">
+            <group>post:list</group>
+            <group>post:read</group>
+            <group>tag:write</group>
+            <group>tag:update</group>
+        </attribute>
+
+    </class>
+
+    <class name="App\Entity\User">
+
+        <attribute name="id">
+            <group>post:list</group>
+            <group>post:read</group>
+            <group>postComment:list</group>
+            <group>postComment:read</group>
+            <group>imageComment:list</group>
+            <group>imageComment:read</group>
+        </attribute>
+
+        <attribute name="username">
+            <group>user:write</group>
+            <group>user:read</group>
+            <group>post:list</group>
+            <group>post:read</group>
+            <group>postComment:list</group>
+            <group>postComment:read</group>
+            <group>imageComment:list</group>
+            <group>imageComment:read</group>
+        </attribute>
+
+        <attribute name="fullname">
+            <group>user:write</group>
+            <group>user:read</group>
+            <group>user:update</group>
+            <group>post:list</group>
+            <group>post:read</group>
+            <group>postComment:list</group>
+            <group>postComment:read</group>
+            <group>imageComment:list</group>
+            <group>imageComment:read</group>
+        </attribute>
+
+        <attribute name="email">
+            <group>user:write</group>
+            <group>user:update</group>
+        </attribute>
+
+
+        <attribute name="plainPassword">
+            <group>user:write</group>
+            <group>user:update</group>
+        </attribute>
+
+
+        <attribute name="retypedPlainPassword">
+            <group>user:write</group>
+            <group>user:update</group>
+        </attribute>
+
+    </class>
+
+</serializer>

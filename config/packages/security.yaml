@@ -14,10 +14,10 @@ security:
             security: false
         api:
             anonymous: true
-            pattern: ^/api
+            pattern: ^/
             stateless: true
             json_login:
-                check_path: /api/login_check
+                check_path: /login_check
                 success_handler: lexik_jwt_authentication.handler.authentication_success
                 failure_handler: lexik_jwt_authentication.handler.authentication_failure
             guard:
@@ -33,9 +33,8 @@ security:
         ROLE_SUPER_ADMINISTRATOR: [ROLE_ADMINISTRATOR]
     
     access_control:
-        - { path: '^/api/admin', roles: ROLE_ADMINISTRATOR }
         - { path: '^/admin', roles: ROLE_ADMINISTRATOR }
-        - { path: '^/api/profile', roles: IS_AUTHENTICATED_FULLY }
-        - { path: '^/api/account', roles: IS_AUTHENTICATED_FULLY }
-        - { path: '^/api/login', roles: IS_AUTHENTICATED_ANONYMOUSLY }
-        - { path: '^/api', roles: IS_AUTHENTICATED_ANONYMOUSLY }
+        - { path: '^/profile', roles: IS_AUTHENTICATED_FULLY }
+        - { path: '^/account', roles: IS_AUTHENTICATED_FULLY }
+        - { path: '^/login', roles: IS_AUTHENTICATED_ANONYMOUSLY }
+        - { path: '^/', roles: IS_AUTHENTICATED_ANONYMOUSLY }

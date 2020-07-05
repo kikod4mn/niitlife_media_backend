@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<doctrine-mapping xmlns="http://doctrine-project.org/schemas/orm/doctrine-mapping"
+                  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                  xsi:schemaLocation="http://doctrine-project.org/schemas/orm/doctrine-mapping
+        https://doctrine-project.org/schemas/orm/doctrine-mapping.xsd">
+
+    <entity name="App\Entity\ImageComment" repository-class="App\Repository\ImageCommentRepository">
+
+        <many-to-one field="author" target-entity="App\Entity\User" inversed-by="imageComments">
+            <join-column name="author_id" nullable="false"/>
+        </many-to-one>
+
+        <many-to-one field="image" target-entity="App\Entity\Image" inversed-by="comments">
+            <join-column name="image_id" nullable="false"/>
+        </many-to-one>
+
+        <many-to-many field="likedBy" target-entity="App\Entity\User" inversed-by="imageCommentsLiked">
+            <join-table name="image_comment_likes">
+                <join-columns>
+                    <join-column name="comment_id" nullable="false"/>
+                </join-columns>
+                <inverse-join-columns>
+                    <join-column name="user_id" nullable="false"/>
+                </inverse-join-columns>
+            </join-table>
+        </many-to-many>
+
+    </entity>
+
+</doctrine-mapping>

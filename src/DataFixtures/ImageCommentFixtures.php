@@ -25,6 +25,7 @@ class ImageCommentFixtures extends BaseFixture implements DependentFixtureInterf
 			$comment->setAuthor($this->getRandomReference(User::class));
 			$comment->setImage($this->getRandomReference(Image::class));
 			$comment->setBody($faker->realText(250));
+			$comment->setCreationTimestamps();
 		}
 		);
 		

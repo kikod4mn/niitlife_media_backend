@@ -1,9 +1,12 @@
 <component name="ProjectDictionaryState">
   <dictionary name="Kristo">
     <words>
+      <w>authorable</w>
       <w>fullname</w>
       <w>sluggable</w>
       <w>stampable</w>
+      <w>timestampable</w>
+      <w>uuidable</w>
     </words>
   </dictionary>
 </component>

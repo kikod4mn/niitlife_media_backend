@@ -11,6 +11,11 @@ use Exception;
 trait SluggableTrait
 {
 	/**
+	 * @var null|string
+	 */
+	protected ?string $slug = null;
+	
+	/**
 	 * First makes sure the slug passed in is not too long.
 	 * If null is passed, assumes the presence of "title" field.
 	 * If title does not exist, assumes presence of "static::SLUGGABLE_FIELD".

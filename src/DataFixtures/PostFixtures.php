@@ -40,11 +40,13 @@ class PostFixtures extends BaseFixture implements DependentFixtureInterface
 			// Simulate site owner being only one posting
 			$post->setAuthor($user);
 			$post->setTitle($faker->realText(50));
+			$post->setSlug();
 			$post->setBody($faker->realText(7500));
 			$post->setCategory($this->getRandomReference(PostCategory::class));
 			for ($i = 0; $i < rand(3, 6); $i++) {
 				$post->addTag($this->getRandomReference(Tag::class));
 			}
+			$post->setCreationTimestamps();
 		}
 		);
 		$manager->flush();

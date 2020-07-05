@@ -8,6 +8,8 @@ services:
         autowire: true
         autoconfigure: true
         public: false
+        bind:
+            $projectDir: '%kernel.project_dir%'
     
     App\:
         resource: '../src/*'
@@ -21,9 +23,3 @@ services:
         arguments:
             $adminMailFrom: '%adminMailFrom%'
             $adminMailTo: '%adminMailTo%'
-    
-#    App\EntityListener\EntityListener:
-#        tags:
-#            - { name: doctrine.event_listener, event: prePersist }
-#            - { name: doctrine.event_listener, event: preUpdate }
-#            - { name: doctrine.event_listener, event: postLoad }

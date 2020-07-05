@@ -1,0 +1,71 @@
+<?xml version="1.0" ?>
+<serializer xmlns="http://symfony.com/schema/dic/serializer-mapping"
+            xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+            xsi:schemaLocation="http://symfony.com/schema/dic/serializer-mapping
+        https://symfony.com/schema/dic/serializer-mapping/serializer-mapping-1.0.xsd"
+>
+
+    <class name="App\Entity\Post">
+
+        <attribute name="id">
+            <group>post:list</group>
+            <group>post:read</group>
+        </attribute>
+
+        <attribute name="title">
+            <group>post:write</group>
+            <group>post:update</group>
+            <group>post:list</group>
+            <group>post:read</group>
+        </attribute>
+
+        <attribute name="slug">
+            <group>post:list</group>
+            <group>post:read</group>
+        </attribute>
+
+        <attribute name="body">
+            <group>post:write</group>
+            <group>post:update</group>
+            <group>post:list</group>
+            <group>post:read</group>
+        </attribute>
+
+        <attribute name="category">
+            <group>post:write</group>
+            <group>post:update</group>
+            <group>post:list</group>
+            <group>post:read</group>
+        </attribute>
+
+        <attribute name="author">
+            <group>post:list</group>
+            <group>post:read</group>
+        </attribute>
+
+        <attribute name="likedBy">
+            <group>post:read</group>
+        </attribute>
+
+        <attribute name="likeCount">
+            <group>post:list</group>
+            <group>post:read</group>
+        </attribute>
+
+        <attribute name="viewCount">
+            <group>post:list</group>
+            <group>post:read</group>
+        </attribute>
+
+        <attribute name="tags">
+            <group>post:list</group>
+            <group>post:read</group>
+        </attribute>
+
+        <attribute name="comments">
+            <group>post:read</group>
+        </attribute>
+
+    </class>
+
+</serializer>

@@ -4,19 +4,23 @@ declare(strict_types = 1);
 
 namespace App\Entity\Concerns;
 
-use Doctrine\ORM\Mapping as ORM;
 use Ramsey\Uuid\Uuid;
-use Symfony\Component\Serializer\Annotation\Groups;
+use Ramsey\Uuid\UuidInterface;
 
 trait UuidableTrait
 {
+	/**
+	 * @var null|UuidInterface
+	 */
+	protected ?UuidInterface $id = null;
+	
 	/**
 	 * @return null|string
 	 * NOTE : Symfony does not like strict types, attempt to cast the Uuid to a string before returning.
 	 */
 	public function getId(): ?string
 	{
-		return $this->id;
+		return (string) $this->id;
 	}
 	
 	/**
@@ -24,6 +28,6 @@ trait UuidableTrait
 	 */
 	public function generateUuid(): void
 	{
-		$this->id = Uuid::uuid4()->toString();
+		$this->id = Uuid::uuid4();
 	}
 }

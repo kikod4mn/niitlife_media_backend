@@ -4,12 +4,12 @@
 	"require" : {
 		"php": "^7.4",
 		"ext-ctype": "*",
+		"ext-dom": "*",
 		"ext-iconv": "*",
 		"ext-json": "*",
-		"api-platform/api-pack": "^1.2",
 		"crudleapps/profanity": "^1.0",
 		"easycorp/easyadmin-bundle": "^3.0",
-		"ezyang/htmlpurifier": "^4.12",
+		"knplabs/knp-paginator-bundle": "^5.2",
 		"lexik/jwt-authentication-bundle": "^2.8",
 		"nesbot/carbon": "^2.32",
 		"ramsey/uuid": "^4.0",
@@ -37,17 +37,18 @@
 		"symfony/twig-pack": "*",
 		"symfony/validator": "5.1.*",
 		"symfony/web-link": "5.1.*",
-		"symfony/yaml": "5.1.*"
+		"symfony/yaml": "5.1.*",
+		"tgalopin/html-sanitizer": "^1.4"
 	},
 	"require-dev" : {
+		"dg/bypass-finals" : "^1.1",
+		"doctrine/doctrine-fixtures-bundle" : "^3.3",
+		"fzaninotto/faker" : "^1.9",
 		"symfony/debug-pack" : "*",
 		"symfony/maker-bundle" : "^1.0",
+		"symfony/phpunit-bridge" : "^5.1",
 		"symfony/profiler-pack" : "*",
-		"symfony/test-pack" : "*",
-		"doctrine/doctrine-fixtures-bundle" : "^3.3",
-		"dg/bypass-finals" : "^1.1",
-		"fzaninotto/faker" : "^1.9",
-		"symfony/phpunit-bridge" : "^5.0"
+		"symfony/test-pack" : "*"
 	},
 	"config" : {
 		"platform" : {

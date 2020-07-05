@@ -4,12 +4,9 @@ declare(strict_types = 1);
 
 namespace App\EventSubscriber;
 
-use ApiPlatform\Core\EventListener\EventPriorities;
 use App\Entity\Contracts\Authorable;
+use App\Entity\Event\AuthorableCreatedEvent;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
-use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpKernel\Event\ViewEvent;
-use Symfony\Component\HttpKernel\KernelEvents;
 use Symfony\Component\Security\Core\Security;
 
 class AuthorableEntitySubscriber implements EventSubscriberInterface
@@ -34,20 +31,18 @@ class AuthorableEntitySubscriber implements EventSubscriberInterface
 	public static function getSubscribedEvents(): array
 	{
 		return [
-			KernelEvents::VIEW => ['setAuthor', EventPriorities::PRE_WRITE],
+			AuthorableCreatedEvent::class => ['setAuthor', 999],
 		];
 	}
 	
-	public function setAuthor(ViewEvent $event): void
+	public function setAuthor(AuthorableCreatedEvent $event): void
 	{
-		$entity = $event->getControllerResult();
-		$method = $event->getRequest()->getMethod();
+		$entity = $event->getEntity();
 		
-		if (! $entity instanceof Authorable || Request::METHOD_POST !== $method) {
-			return;
+		if ($entity->getAuthor() === null && $entity instanceof Authorable) {
+			
+			$entity->setAuthor($this->getSecurity()->getUser());
 		}
-		
-		$entity->setAuthor($this->getSecurity()->getUser());
 	}
 	
 	/**

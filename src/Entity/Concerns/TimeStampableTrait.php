@@ -8,20 +8,15 @@ use App\Entity\Contracts\TimeStampable;
 use Carbon\Carbon;
 use DateTime;
 use DateTimeInterface;
-use Doctrine\ORM\Mapping as ORM;
-use Symfony\Component\Serializer\Annotation\Groups;
 
 trait TimeStampableTrait
 {
 	/**
-	 * @ORM\Column(type="datetime")
-	 * @Groups({"get", "get-post-with-comments"})
 	 * @var null|DateTimeInterface
 	 */
 	protected ?DateTimeInterface $createdAt = null;
 	
 	/**
-	 * @ORM\Column(type="datetime", nullable=true)
 	 * @var null|DateTimeInterface
 	 */
 	protected ?DateTimeInterface $updatedAt = null;

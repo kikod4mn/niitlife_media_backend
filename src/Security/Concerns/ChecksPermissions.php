@@ -39,7 +39,12 @@ trait ChecksPermissions
 	 */
 	public function setUser(): self
 	{
-		$this->user = $this->getSecurity()->getUser() ?? $this->getSecurity()->getToken()->getUser();
+		$this->user = is_null($this->getSecurity()->getToken()) ? $this->getSecurity()->getUser() : $this->getSecurity()->getToken()->getUser();
+		
+		if (! $this->user instanceof UserInterface) {
+			
+			$this->user = null;
+		}
 		
 		return $this;
 	}
@@ -95,7 +100,10 @@ trait ChecksPermissions
 		return $this->getSecurity()->isGranted('IS_AUTHENTICATED_ANONYMOUSLY');
 	}
 	
-	public function isUserFullyAuth()
+	/**
+	 * @return bool
+	 */
+	public function isUserFullyAuth(): bool
 	{
 		return $this->getSecurity()->isGranted('IS_AUTHENTICATED_FULLY');
 	}

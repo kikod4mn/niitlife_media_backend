@@ -4,8 +4,9 @@ declare(strict_types = 1);
 
 namespace App\EventSubscriber;
 
-use ApiPlatform\Core\EventListener\EventPriorities;
 use App\Entity\Contracts\TimeStampable;
+use App\Entity\Event\TimeStampableCreatedEvent;
+use App\Entity\Event\TimeStampableUpdatedEvent;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\Event\ViewEvent;
@@ -19,46 +20,32 @@ class TimeStampableEntitySubscriber implements EventSubscriberInterface
 	public static function getSubscribedEvents(): array
 	{
 		return [
-			KernelEvents::VIEW => [
-				['setCreationStamp', EventPriorities::PRE_WRITE],
-				['setUpdatedStamp', EventPriorities::PRE_WRITE],
-			],
+			TimeStampableCreatedEvent::class => ['setCreationStamp', 999],
+			TimeStampableUpdatedEvent::class => ['setUpdatedStamp', 999],
 		];
 	}
 	
 	/**
-	 * @param  ViewEvent  $event
+	 * @param  TimeStampableCreatedEvent  $event
 	 */
-	public function setCreationStamp(ViewEvent $event): void
+	public function setCreationStamp(TimeStampableCreatedEvent $event): void
 	{
-		$entity = $event->getControllerResult();
-		$method = $event->getRequest()->getMethod();
+		$entity = $event->getEntity();
 		
-		if (! $entity instanceof TimeStampable || Request::METHOD_POST !== $method) {
-			
-			return;
-		}
-		
-		if ($entity->getCreatedAt() === null && $entity->hasTimestamps()) {
+		if ($entity->getCreatedAt() === null && $entity->hasTimestamps() && $entity instanceof TimeStampable) {
 			
 			$entity->setCreationTimestamps();
 		}
 	}
 	
 	/**
-	 * @param  ViewEvent  $event
+	 * @param  TimeStampableUpdatedEvent  $event
 	 */
-	public function setUpdatedStamp(ViewEvent $event): void
+	public function setUpdatedStamp(TimeStampableUpdatedEvent $event): void
 	{
-		$entity = $event->getControllerResult();
-		$method = $event->getRequest()->getMethod();
+		$entity = $event->getEntity();
 		
-		if (! $entity instanceof TimeStampable || Request::METHOD_PUT !== $method) {
-			
-			return;
-		}
-		
-		if ($entity->getUpdatedAt() === null && $entity->hasTimestamps()) {
+		if ($entity->getUpdatedAt() === null && $entity->hasTimestamps() && $entity instanceof TimeStampable) {
 			
 			$entity->setUpdatedTimestamps();
 		}

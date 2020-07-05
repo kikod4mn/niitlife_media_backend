@@ -46,6 +46,7 @@ class ImageFixtures extends BaseFixture implements DependentFixtureInterface
 			// Simulate site owner only uploading images.
 			$image->setAuthor($user);
 			$image->setTitle($faker->realText(200));
+			$image->setSlug();
 			$image->setDescription($faker->realText(500));
 			$image->setCategory($this->getRandomReference(ImageCategory::class));
 			$thumbWidth  = (int) $thumbSizes[rand(0, count($thumbSizes) - 1)];
@@ -56,6 +57,7 @@ class ImageFixtures extends BaseFixture implements DependentFixtureInterface
 			$textCol     = $this->randomHexColor();
 			$image->setThumbnail("https://dummyimage.com/{$thumbWidth}x{$thumbHeight}/{$bgCol}/{$textCol}");
 			$image->setOriginal("https://dummyimage.com/{$origWidth}x{$origHeight}/{$bgCol}/{$textCol}");
+			$image->setCreationTimestamps();
 		}
 		);
 		$manager->flush();

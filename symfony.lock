@@ -1,21 +1,4 @@
 {
-    "api-platform/api-pack": {
-        "version": "v1.2.2"
-    },
-    "api-platform/core": {
-        "version": "2.5",
-        "recipe": {
-            "repo": "github.com/symfony/recipes",
-            "branch": "master",
-            "version": "2.5",
-            "ref": "a93061567140e386f107be75340ac2aee3f86cbf"
-        },
-        "files": [
-            "./config/packages/api_platform.yaml",
-            "./config/routes/api_platform.yaml",
-            "./src/Entity/.gitignore"
-        ]
-    },
     "brick/math": {
         "version": "0.8.15"
     },
@@ -138,11 +121,14 @@
     "ezyang/htmlpurifier": {
         "version": "v4.12.0"
     },
-    "fig/link-util": {
-        "version": "1.1.1"
-    },
     "fzaninotto/faker": {
         "version": "v1.9.1"
+    },
+    "knplabs/knp-components": {
+        "version": "v2.3.6"
+    },
+    "knplabs/knp-paginator-bundle": {
+        "version": "v5.2.0"
     },
     "laminas/laminas-code": {
         "version": "3.4.1"
@@ -156,6 +142,9 @@
     "lcobucci/jwt": {
         "version": "3.3.2"
     },
+    "league/uri-parser": {
+        "version": "1.4.1"
+    },
     "lexik/jwt-authentication-bundle": {
         "version": "2.5",
         "recipe": {
@@ -168,23 +157,14 @@
             "./config/packages/lexik_jwt_authentication.yaml"
         ]
     },
+    "masterminds/html5": {
+        "version": "2.7.3"
+    },
     "monolog/monolog": {
         "version": "2.1.0"
     },
     "namshi/jose": {
         "version": "7.2.3"
-    },
-    "nelmio/cors-bundle": {
-        "version": "1.5",
-        "recipe": {
-            "repo": "github.com/symfony/recipes",
-            "branch": "master",
-            "version": "1.5",
-            "ref": "6388de23860284db9acce0a7a5d9d13153bcb571"
-        },
-        "files": [
-            "./config/packages/nelmio_cors.yaml"
-        ]
     },
     "nesbot/carbon": {
         "version": "2.35.0"
@@ -630,6 +610,9 @@
     "symfony/yaml": {
         "version": "v5.1.2"
     },
+    "tgalopin/html-sanitizer": {
+        "version": "1.4.0"
+    },
     "twig/extra-bundle": {
         "version": "v3.0.3"
     },
@@ -641,8 +624,5 @@
     },
     "webmozart/assert": {
         "version": "1.9.0"
-    },
-    "willdurand/negotiation": {
-        "version": "v2.3.1"
     }
 }

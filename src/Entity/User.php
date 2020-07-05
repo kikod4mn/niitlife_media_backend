@@ -8,21 +8,11 @@ use App\Entity\AbstractEntity\AbstractEntity;
 use App\Entity\Concerns\FilterProfanitiesTrait;
 use App\Entity\Concerns\TimeStampableTrait;
 use App\Entity\Contracts\TimeStampable;
-use App\Repository\UserRepository;
 use App\Security\Concerns\ValidatesPassword;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
-use Doctrine\ORM\Mapping as ORM;
-use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Security\Core\User\UserInterface;
-use Symfony\Component\Serializer\Annotation\Groups;
-use Symfony\Component\Validator\Constraints as Assert;
 
-/**
- * @ORM\Entity(repositoryClass=UserRepository::class)
- * @UniqueEntity(fields="email", message="This e-mail is already in use")
- * @UniqueEntity(fields="username", message="This username is already in use")
- */
 class User extends AbstractEntity implements UserInterface, TimeStampable
 {
 	use ValidatesPassword, FilterProfanitiesTrait, TimeStampableTrait;
@@ -40,111 +30,86 @@ class User extends AbstractEntity implements UserInterface, TimeStampable
 	public const ROLE_SUPER_ADMINISTRATOR = 'ROLE_SUPER_ADMINISTRATOR';
 	
 	/**
-	 * @ORM\Column(type="string", length=255, unique=true)
-	 * @Assert\NotBlank()
-	 * @Assert\Length(min="6", max="255", minMessage="Minimum length of 6 characters for the username.", maxMessage="Maximum of 255 characters for the username.")
-	 * @Groups({"get", "post", "get-post-with-comments"})
 	 * @var null|string
 	 */
 	protected ?string $username = null;
 	
 	/**
-	 * @ORM\Column(type="string", nullable=false)
 	 * @var null|string
 	 */
 	protected ?string $password = null;
 	
 	/**
-	 * @Assert\NotBlank()
-	 * @Assert\Regex(
-	 *     pattern="/(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9]).{8,}/",
-	 *     message="Minimum length is 8. The password must also contain one uppercase, one lowercase letter and one digit."
-	 * )
-	 * @Groups({"post", "put"})
 	 * @var null|string
 	 */
 	protected ?string $plainPassword = null;
 	
 	/**
-	 * @Assert\NotBlank()
-	 * @Assert\Expression(
-	 *     "this.getPlainPassword() === this.getRetypedPlainPassword()",
-	 *     message="Passwords do not match"
-	 * )
-	 * @Groups({"post", "put"})
 	 * @var null|string
 	 */
 	protected ?string $retypedPlainPassword = null;
 	
 	/**
-	 * @ORM\Column(type="string", length=255, unique=true)
-	 * @Assert\NotBlank()
-	 * @Assert\Email()
-	 * @Assert\Length(max="255", maxMessage="Maximum of 255 characters for the email.")
-	 * @Groups({"post", "put"})
 	 * @var null|string
 	 */
 	protected ?string $email = null;
 	
 	/**
-	 * @ORM\Column(type="string", length=255)
-	 * @Assert\NotBlank()
-	 * @Assert\Length(max="255", maxMessage="Maximum of 255 characters for your name.")
-	 * @Groups({"get", "post", "put", "get-post-with-comments"})
 	 * @var null|string
 	 */
 	protected ?string $fullname = null;
 	
 	/**
-	 * @ORM\Column(type="string", nullable=false)
 	 * @var null|string
 	 */
 	protected ?string $role = null;
 	
 	/**
-	 * @ORM\Column(type="boolean", nullable=false)
 	 * @var bool
 	 */
 	protected bool $activated = false;
 	
 	/**
-	 * @ORM\OneToMany(targetEntity="App\Entity\Post", mappedBy="author", cascade={"all"})
 	 * @var Collection
 	 */
 	protected Collection $posts;
 	
 	/**
-	 * @ORM\ManyToMany(targetEntity="App\Entity\Post", mappedBy="likedBy", cascade={"all"})
 	 * @var Collection
 	 */
 	protected Collection $postsLiked;
 	
 	/**
-	 * @ORM\OneToMany(targetEntity="App\Entity\PostComment", mappedBy="author", cascade={"all"})
 	 * @var Collection
 	 */
-	protected Collection $comments;
+	protected Collection $postComments;
 	
 	/**
-	 * @ORM\ManyToMany(targetEntity="App\Entity\PostComment", mappedBy="likedBy", cascade={"all"})
 	 * @var Collection
 	 */
-	protected Collection $commentsLiked;
+	protected Collection $postCommentsLiked;
 	
 	/**
-	 * @ORM\OneToMany(targetEntity="App\Entity\Image", mappedBy="author", cascade={"all"})
 	 * @var Collection
 	 */
 	protected Collection $images;
 	
 	/**
-	 * @ORM\ManyToMany(targetEntity="App\Entity\Image", mappedBy="likedBy", cascade={"all"})
 	 * @var Collection
 	 */
 	protected Collection $imagesLiked;
 	
 	/**
-	 * @ORM\OneToOne(targetEntity="App\Entity\UserProfile", mappedBy="user", cascade={"all"})
+	 * @var Collection
+	 */
+	protected Collection $imageComments;
+	
+	/**
+	 * @var Collection
+	 */
+	protected Collection $imageCommentsLiked;
+	
+	/**
 	 * @var null|UserProfile
 	 */
 	protected ?UserProfile $userProfile = null;
@@ -156,12 +121,14 @@ class User extends AbstractEntity implements UserInterface, TimeStampable
 	{
 		$this->activate();
 		$this->setRole(self::ROLE_COMMENTATOR);
-		$this->posts         = new ArrayCollection();
-		$this->postsLiked    = new ArrayCollection();
-		$this->comments      = new ArrayCollection();
-		$this->commentsLiked = new ArrayCollection();
-		$this->images        = new ArrayCollection();
-		$this->imagesLiked   = new ArrayCollection();
+		$this->posts              = new ArrayCollection();
+		$this->postsLiked         = new ArrayCollection();
+		$this->postComments       = new ArrayCollection();
+		$this->postCommentsLiked  = new ArrayCollection();
+		$this->images             = new ArrayCollection();
+		$this->imagesLiked        = new ArrayCollection();
+		$this->imageComments      = new ArrayCollection();
+		$this->imageCommentsLiked = new ArrayCollection();
 	}
 	
 	/**
@@ -372,17 +339,17 @@ class User extends AbstractEntity implements UserInterface, TimeStampable
 	/**
 	 * @return null|Collection
 	 */
-	public function getComments(): ?Collection
+	public function getPostComments(): ?Collection
 	{
-		return $this->comments;
+		return $this->postComments;
 	}
 	
 	/**
 	 * @return null|Collection
 	 */
-	public function getCommentsLiked(): ?Collection
+	public function getPostCommentsLiked(): ?Collection
 	{
-		return $this->commentsLiked;
+		return $this->postCommentsLiked;
 	}
 	
 	/**
@@ -399,6 +366,22 @@ class User extends AbstractEntity implements UserInterface, TimeStampable
 	public function getImagesLiked(): ?Collection
 	{
 		return $this->imagesLiked;
+	}
+	
+	/**
+	 * @return null|Collection
+	 */
+	public function getImageComments(): ?Collection
+	{
+		return $this->imageComments;
+	}
+	
+	/**
+	 * @return null|Collection
+	 */
+	public function getImageCommentsLiked(): ?Collection
+	{
+		return $this->imageCommentsLiked;
 	}
 	
 	/**

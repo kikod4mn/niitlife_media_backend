@@ -25,6 +25,7 @@ class PostCommentFixtures extends BaseFixture implements DependentFixtureInterfa
 			$comment->setAuthor($this->getRandomReference(User::class));
 			$comment->setPost($this->getRandomReference(Post::class));
 			$comment->setBody($faker->realText(250));
+			$comment->setCreationTimestamps();
 		}
 		);
 		
