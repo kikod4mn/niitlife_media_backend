@@ -26,16 +26,16 @@ interface BaseFactoryInterface
 	
 	/**
 	 * @param  array  $data
+	 * @return mixed
+	 */
+	public function create(array $data);
+	
+	/**
+	 * @param  array  $data
 	 * @param  mixed  $entity
 	 * @return mixed
 	 */
 	public function edit(array $data, $entity);
-	
-	/**
-	 * @param  array  $data
-	 * @return mixed
-	 */
-	public function create(array $data);
 	
 	/**
 	 * @param  array  $data

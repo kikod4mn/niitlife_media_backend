@@ -4,7 +4,6 @@ namespace App\Entity;
 
 use App\Entity\AbstractEntity\AbstractEntity;
 use App\Entity\Concerns\CountableLikesTrait;
-use App\Entity\Concerns\FilterProfanitiesTrait;
 use App\Entity\Concerns\AuthorableTrait;
 use App\Entity\Concerns\TimeStampableTrait;
 use App\Entity\Concerns\LikableTrait;
@@ -18,7 +17,7 @@ use App\Entity\Contracts\Trashable;
 
 abstract class BaseComment extends AbstractEntity implements Authorable, TimeStampable, Publishable, Likeable, Trashable
 {
-	use AuthorableTrait, TimeStampableTrait, PublishableTrait, LikableTrait, CountableLikesTrait, FilterProfanitiesTrait, TrashableTrait;
+	use AuthorableTrait, TimeStampableTrait, PublishableTrait, LikableTrait, CountableLikesTrait, TrashableTrait;
 	
 	/**
 	 * @var null|string
@@ -39,7 +38,7 @@ abstract class BaseComment extends AbstractEntity implements Authorable, TimeSta
 	 */
 	public function setBody(string $body): BaseComment
 	{
-		$this->body = $this->cleanString($body);
+		$this->body = $body;
 		
 		return $this;
 	}

@@ -677,7 +677,7 @@ class Str
 	 * @param  string  $html
 	 * @return string
 	 */
-	public static function clean(string $html): string
+	public static function cleanse(string $html): string
 	{
 		$sanitizer = Sanitizer::create(
 			[

@@ -10,6 +10,7 @@ use App\Entity\Post;
 use Generator;
 use InvalidArgumentException;
 use PHPUnit\Framework\TestCase;
+use Symfony\Component\Validator\Exception\ValidatorException;
 
 class PostFactoryTest extends TestCase
 {
@@ -86,8 +87,10 @@ class PostFactoryTest extends TestCase
 		}
 	}
 	
-	public
-	function provideTestCases(): Generator
+	/**
+	 * @return Generator
+	 */
+	public function provideTestCases(): Generator
 	{
 		$title = 'the blog post title';
 		
@@ -152,6 +155,22 @@ class PostFactoryTest extends TestCase
 			null,
 			null,
 			InvalidArgumentException::class,
+		];
+		
+		yield 'short title' => [
+			['title' => 'sh', 'body' => $body],
+			self::EXCEPTION,
+			null,
+			null,
+			ValidatorException::class,
+		];
+		
+		yield 'short body' => [
+			['title' => $title, 'body' => 'sh'],
+			self::EXCEPTION,
+			null,
+			null,
+			ValidatorException::class,
 		];
 		
 		yield 'correct data with javascript in title' => [

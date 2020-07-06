@@ -4,6 +4,7 @@ declare(strict_types = 1);
 
 namespace App\EventSubscriber;
 
+use App\Entity\Event\UserCreatedEvent;
 use App\Entity\User;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\HttpFoundation\Request;
@@ -33,23 +34,24 @@ class PasswordHashSubscriber implements EventSubscriberInterface
 	public static function getSubscribedEvents(): array
 	{
 		return [
-			KernelEvents::VIEW => ['hashPassword', 999],
+			UserCreatedEvent::class => ['hashPassword', 999],
 		];
 	}
 	
 	/**
-	 * @param  ViewEvent  $event
+	 * @param  UserCreatedEvent  $event
 	 */
-	public function hashPassword(ViewEvent $event): void
+	public function hashPassword(UserCreatedEvent $event): void
 	{
-		$user   = $event->getControllerResult();
-		$method = $event->getRequest()->getMethod();
+		/** @var User $user */
+		$user = $event->getUser();
 		
-		if (! $user instanceof User || ! in_array($method, [Request::METHOD_POST, Request::METHOD_PUT])) {
+		if (! $user instanceof User) {
+			
 			return;
 		}
 		
-		if ($user->getPlainPassword() !== null) {
+		if (null !== $user->getPlainPassword() && null !== $user->getRetypedPlainPassword()) {
 			
 			$user->setPassword(
 				$this->getPasswordEncoder()->encodePassword($user, $user->getPlainPassword())

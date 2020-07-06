@@ -4,6 +4,7 @@ declare(strict_types = 1);
 
 namespace App\Entity\Factory;
 
+use App\Entity\Concerns\FilterProfanitiesTrait;
 use App\Entity\Factory\Concerns\BaseFactoryTrait;
 use App\Entity\Factory\Contracts\BaseFactoryInterface;
 use App\Entity\Factory\Exception\ArrayKeyNotSetException;
@@ -17,7 +18,7 @@ use Symfony\Component\Validator\Exception\ValidatorException;
 
 class PostCommentFactory implements BaseFactoryInterface
 {
-	use BaseFactoryTrait;
+	use BaseFactoryTrait, FilterProfanitiesTrait;
 	
 	/**
 	 * @param  string|array  $data
@@ -35,9 +36,7 @@ class PostCommentFactory implements BaseFactoryInterface
 	 */
 	public static function update($data, $comment): PostComment
 	{
-		if (! $comment instanceof PostComment) {
-			throw new InvalidArgumentException('When updating, entity must be an instance of PostComment');
-		}
+		self::entityTypeCheck($comment);
 		
 		return self::modify($data, $comment);
 	}
@@ -48,7 +47,7 @@ class PostCommentFactory implements BaseFactoryInterface
 	 */
 	public function validArrayKeys(array $data): void
 	{
-		if (! isset($data['body']) || Validate::blank($data['body'])) {
+		if (! isset($data['body'])) {
 			throw new ArrayKeyNotSetException('Key "body" not set on raw post data!');
 		}
 	}
@@ -95,7 +94,9 @@ class PostCommentFactory implements BaseFactoryInterface
 				new Length(
 					[
 						'min'        => 10,
+						'max'        => 4000,
 						'minMessage' => 'Comment body must be at least {{ limit }} characters long.',
+						'maxMessage' => 'Comment body maximum is {{ limit }} characters. Cool it Shakespeare!',
 					]
 				),
 			]
@@ -106,7 +107,7 @@ class PostCommentFactory implements BaseFactoryInterface
 			throw new ValidatorException((string) $error);
 		}
 		
-		return $comment->setBody($body);
+		return $comment->setBody($this->filterProfanities($body));
 	}
 	
 	/**
@@ -116,7 +117,7 @@ class PostCommentFactory implements BaseFactoryInterface
 	{
 		if (! $entity instanceof PostComment) {
 			
-			throw new InvalidArgumentException('When updating, entity must be an instance of Post.');
+			throw new InvalidArgumentException('When updating, entity must be an instance of PostComment.');
 		}
 	}
 }

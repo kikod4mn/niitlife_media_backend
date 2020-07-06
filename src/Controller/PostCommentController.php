@@ -5,8 +5,8 @@ declare(strict_types = 1);
 namespace App\Controller;
 
 use App\Controller\Concerns\ManagesEntities;
-use App\Controller\Concerns\ReturnsJsonErrors;
-use App\Controller\Concerns\ReturnsNormalizedJson;
+use App\Controller\Concerns\SendsJsonMessages;
+use App\Controller\Concerns\NormalizesJson;
 use App\Controller\Concerns\UsesXmlMapping;
 use App\Entity\Contracts\Trashable;
 use App\Entity\Event\AuthorableCreatedEvent;
@@ -30,7 +30,7 @@ use Throwable;
 
 class PostCommentController extends AbstractController
 {
-	use UsesXmlMapping, ReturnsJsonErrors, ReturnsNormalizedJson, ManagesEntities;
+	use UsesXmlMapping, SendsJsonMessages, NormalizesJson, ManagesEntities;
 	
 	/**
 	 * @var PostCommentRepository
@@ -75,7 +75,7 @@ class PostCommentController extends AbstractController
 		
 		if (! $post) {
 			
-			$this->jsonError(Response::HTTP_NOT_FOUND, sprintf('Post with id "%s" not found', $postId));
+			$this->jsonMessage(Response::HTTP_NOT_FOUND, sprintf('Post with id "%s" not found', $postId));
 		}
 		
 		$qb = $this->getQueryBuilder()
@@ -110,7 +110,7 @@ class PostCommentController extends AbstractController
 		
 		if (! $comment) {
 			
-			return $this->jsonError(Response::HTTP_NOT_FOUND, sprintf('Comment with id "%s" not found', $id));
+			return $this->jsonMessage(Response::HTTP_NOT_FOUND, sprintf('Comment with id "%s" not found', $id));
 		}
 		
 		$this->denyAccessUnlessGranted(PostCommentVoter::VIEW, $comment);
@@ -139,14 +139,14 @@ class PostCommentController extends AbstractController
 		
 		if (! $post) {
 			
-			return $this->jsonError(Response::HTTP_NOT_FOUND, sprintf('Post with id "%s" not found. Cannot post comment for a nonexistent post.', $postId));
+			return $this->jsonMessage(Response::HTTP_NOT_FOUND, sprintf('Post with id "%s" not found. Cannot post comment for a nonexistent post.', $postId));
 		}
 		
 		try {
 			$comment = PostCommentFactory::make($request->getContent());
 		} catch (Throwable $e) {
 			
-			return $this->jsonError(Response::HTTP_BAD_REQUEST, $e->getMessage());
+			return $this->jsonMessage(Response::HTTP_BAD_REQUEST, $e->getMessage());
 		}
 		
 		$this->denyAccessUnlessGranted(PostCommentVoter::CREATE, $comment);
@@ -186,14 +186,14 @@ class PostCommentController extends AbstractController
 		
 		if (! $post) {
 			
-			return $this->jsonError(Response::HTTP_NOT_FOUND, sprintf('Post with id "%s" not found. Cannot post comment for a nonexistent post.', $postId));
+			return $this->jsonMessage(Response::HTTP_NOT_FOUND, sprintf('Post with id "%s" not found. Cannot post comment for a nonexistent post.', $postId));
 		}
 		
 		$comment = $this->commentRepository->find($commentId);
 		
 		if (! $comment) {
 			
-			return $this->jsonError(Response::HTTP_NOT_FOUND, sprintf('Comment with id "%s" not found.', $commentId));
+			return $this->jsonMessage(Response::HTTP_NOT_FOUND, sprintf('Comment with id "%s" not found.', $commentId));
 		}
 		
 		$this->denyAccessUnlessGranted(PostCommentVoter::EDIT, $comment);
@@ -220,7 +220,7 @@ class PostCommentController extends AbstractController
 		
 		if (! $comment) {
 			
-			return $this->jsonError(Response::HTTP_NOT_FOUND, sprintf('Comment with id "%s" not found.', $id));
+			return $this->jsonMessage(Response::HTTP_NOT_FOUND, sprintf('Comment with id "%s" not found.', $id));
 		}
 		
 		$this->denyAccessUnlessGranted(PostCommentVoter::DELETE, $comment);
@@ -245,7 +245,7 @@ class PostCommentController extends AbstractController
 		
 		if (! $comment) {
 			
-			return $this->jsonError(Response::HTTP_NOT_FOUND, sprintf('Comment with id "%s" not found.', $id));
+			return $this->jsonMessage(Response::HTTP_NOT_FOUND, sprintf('Comment with id "%s" not found.', $id));
 		}
 		
 		$this->denyAccessUnlessGranted(PostCommentVoter::DELETE, $comment);
@@ -254,7 +254,7 @@ class PostCommentController extends AbstractController
 			
 			if (! $comment->isTrashed()) {
 				
-				return $this->jsonError(
+				return $this->jsonMessage(
 					Response::HTTP_FORBIDDEN, 'Comment is not yet trashed. Either send the comment to trash or use the forceable delete option.'
 				);
 			}

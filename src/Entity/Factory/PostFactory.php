@@ -42,21 +42,6 @@ class PostFactory implements BaseFactoryInterface
 	
 	/**
 	 * @param  array  $data
-	 * @throws ArrayKeyNotSetException
-	 */
-	public function validArrayKeys(array $data): void
-	{
-		if (! isset($data['title']) || Validate::blank($data['title'])) {
-			throw new ArrayKeyNotSetException('Key "title" not set on raw post data!');
-		}
-		
-		if (! isset($data['body']) || Validate::blank($data['body'])) {
-			throw new ArrayKeyNotSetException('Key "body" not set on raw post data!');
-		}
-	}
-	
-	/**
-	 * @param  array  $data
 	 * @return Post
 	 */
 	public function create(array $data): Post
@@ -89,6 +74,21 @@ class PostFactory implements BaseFactoryInterface
 		}
 		
 		return $post;
+	}
+	
+	/**
+	 * @param  array  $data
+	 * @throws ArrayKeyNotSetException
+	 */
+	public function validArrayKeys(array $data): void
+	{
+		if (! isset($data['title'])) {
+			throw new ArrayKeyNotSetException('Key "title" not set on raw post data!');
+		}
+		
+		if (! isset($data['body'])) {
+			throw new ArrayKeyNotSetException('Key "body" not set on raw post data!');
+		}
 	}
 	
 	/**
@@ -125,7 +125,7 @@ class PostFactory implements BaseFactoryInterface
 	
 	protected function setBody(string $body, Post $post): Post
 	{
-		$body = Str::clean($body);
+		$body = Str::cleanse($body);
 		
 		$error = $this->getValidator()->validate(
 			$body,

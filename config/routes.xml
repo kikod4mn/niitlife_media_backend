@@ -10,4 +10,7 @@
     <!-- if the action is implemented as the __invoke() method of the
          controller class, you can skip the '::method_name' part:
          controller="App\Controller\BlogController"/> -->
+
+    <route id="security.register" path="/register" methods="POST"
+           controller="App\Controller\Security\UserRegisterController"/>
 </routes>
