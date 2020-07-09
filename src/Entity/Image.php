@@ -45,6 +45,11 @@ class Image extends AbstractEntity implements Authorable, TimeStampable, Publish
 	/**
 	 * @var null|string
 	 */
+	protected ?string $half = null;
+	
+	/**
+	 * @var null|string
+	 */
 	protected ?string $thumbnail = null;
 	
 	/**
@@ -80,6 +85,7 @@ class Image extends AbstractEntity implements Authorable, TimeStampable, Publish
 		$this->publishedAt = $this->freshTimestamp();
 		$this->comments    = new ArrayCollection();
 		$this->likedBy     = new ArrayCollection();
+		$this->tags        = new ArrayCollection();
 	}
 	
 	/**
@@ -150,6 +156,25 @@ class Image extends AbstractEntity implements Authorable, TimeStampable, Publish
 	}
 	
 	/**
+	 * @param  string  $half
+	 * @return $this|Image
+	 */
+	public function setHalf(string $half): Image
+	{
+		$this->half = $half;
+		
+		return $this;
+	}
+	
+	/**
+	 * @return null|string
+	 */
+	public function getHalf(): ?string
+	{
+		return $this->half;
+	}
+	
+	/**
 	 * @return null|string
 	 */
 	public function getThumbnail(): ?string
@@ -195,4 +220,53 @@ class Image extends AbstractEntity implements Authorable, TimeStampable, Publish
 		return $this->comments;
 	}
 	
+	/**
+	 * @return null|Collection
+	 */
+	public function getTags(): ?Collection
+	{
+		return $this->tags;
+	}
+	
+	/**
+	 * @param  array  $tags
+	 * @return Image
+	 */
+	public function setTags(array $tags): self
+	{
+		$this->tags = new ArrayCollection();
+		
+		foreach ($tags as $tag) {
+			
+			$this->addTag($tag);
+		}
+		
+		return $this;
+	}
+	
+	/**
+	 * @param  Tag  $tag
+	 * @return $this|Image
+	 */
+	public function addTag(Tag $tag): Image
+	{
+		if (! $this->tags->contains($tag)) {
+			$this->tags->add($tag);
+		}
+		
+		return $this;
+	}
+	
+	/**
+	 * @param  Tag  $tag
+	 * @return $this|Image
+	 */
+	public function removeTag(Tag $tag): Image
+	{
+		if ($this->tags->contains($tag)) {
+			$this->tags->remove($tag);
+		}
+		
+		return $this;
+	}
 }

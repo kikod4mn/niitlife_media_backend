@@ -10,6 +10,8 @@ services:
         public: false
         bind:
             $projectDir: '%kernel.project_dir%'
+            $imageDir: '%kernel.project_dir%/public/images/uploaded/'
+            $webPath: '%env(APP_URL)%'
     
     App\:
         resource: '../src/*'

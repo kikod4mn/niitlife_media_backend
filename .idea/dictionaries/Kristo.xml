@@ -3,6 +3,7 @@
     <words>
       <w>authorable</w>
       <w>fullname</w>
+      <w>resizer</w>
       <w>sluggable</w>
       <w>stampable</w>
       <w>timestampable</w>

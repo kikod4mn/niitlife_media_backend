@@ -38,7 +38,9 @@
 		"symfony/validator": "5.1.*",
 		"symfony/web-link": "5.1.*",
 		"symfony/yaml": "5.1.*",
-		"tgalopin/html-sanitizer": "^1.4"
+		"tgalopin/html-sanitizer": "^1.4",
+		"ext-exif" : "*",
+		"ext-gd" : "*"
 	},
 	"require-dev" : {
 		"dg/bypass-finals" : "^1.1",

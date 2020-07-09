@@ -19,6 +19,7 @@
         <field name="slug" type="text" length="255" unique="true"/>
         <field name="description" type="text"/>
         <field name="original" type="text" length="500"/>
+        <field name="half" type="text" length="500"/>
         <field name="thumbnail" type="text" length="500"/>
         <field name="publishedAt" type="datetime" nullable="true"/>
         <field name="createdAt" type="datetime"/>
@@ -31,7 +32,7 @@
         <field name="monthlyViewCount" type="bigint"/>
 
         <many-to-one field="category" target-entity="App\Entity\ImageCategory" inversed-by="images">
-            <join-column name="category_id" nullable="false"/>
+            <join-column name="category_id"/>
         </many-to-one>
 
         <many-to-one field="author" target-entity="App\Entity\User" inversed-by="images">

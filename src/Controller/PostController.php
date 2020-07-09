@@ -87,10 +87,23 @@ final class PostController extends AbstractController
 		$posts = [];
 		
 		foreach ($pagination->getItems() as $post) {
-			$posts[] = $this->getSerializer()->normalize($post, 'json', ['groups' => ['post:list']]);
+			
+			if ($this->isGranted(PostVoter::VIEW, $post)) {
+				
+				$posts[] = $this->getSerializer()->normalize(
+					$post, 'json', ['groups' => ['post:list']]
+				)
+				;
+			}
 		}
 		
-		return $this->json(['posts' => $posts, 'currentPage' => $currentPage, 'lastPage' => $lastPage]);
+		return $this->json(
+			[
+				'posts'       => $posts,
+				'currentPage' => $currentPage,
+				'lastPage'    => $lastPage,
+			]
+		);
 	}
 	
 	/**
@@ -104,7 +117,10 @@ final class PostController extends AbstractController
 		
 		if (! $post) {
 			
-			return $this->jsonMessage(Response::HTTP_NOT_FOUND, sprintf('Post with id "%s" not found', $id));
+			return $this->jsonMessage(
+				Response::HTTP_NOT_FOUND,
+				sprintf('Post with id "%s" not found', $id)
+			);
 		}
 		
 		$this->denyAccessUnlessGranted(PostVoter::VIEW, $post);
@@ -123,7 +139,10 @@ final class PostController extends AbstractController
 		
 		if (! $post) {
 			
-			return $this->jsonMessage(Response::HTTP_NOT_FOUND, sprintf('Post with slug "%s" not found', $slug));
+			return $this->jsonMessage(
+				Response::HTTP_NOT_FOUND,
+				sprintf('Post with slug "%s" not found', $slug)
+			);
 		}
 		
 		$this->denyAccessUnlessGranted(PostVoter::VIEW, $post);
@@ -149,7 +168,10 @@ final class PostController extends AbstractController
 			$post = PostFactory::make($request->getContent());
 		} catch (Throwable $e) {
 			
-			return $this->jsonMessage(Response::HTTP_BAD_REQUEST, $e->getMessage());
+			return $this->jsonMessage(
+				Response::HTTP_BAD_REQUEST,
+				$e->getMessage()
+			);
 		}
 		
 		$this->denyAccessUnlessGranted(PostVoter::CREATE, $post);
@@ -180,11 +202,14 @@ final class PostController extends AbstractController
 	{
 		$this->denyAccessUnlessGranted(User::ROLE_ADMINISTRATOR);
 		
-		$post = $this->getPostRepository()->findOneBy(['id' => $id]);
+		$post = $this->getPostRepository()->find($id);
 		
 		if (! $post) {
 			
-			return $this->jsonMessage(Response::HTTP_NOT_FOUND, sprintf('Post with id "%s" not found', $id));
+			return $this->jsonMessage(
+				Response::HTTP_NOT_FOUND,
+				sprintf('Post with id "%s" not found', $id)
+			);
 		}
 		
 		$this->denyAccessUnlessGranted(PostVoter::EDIT, $post);
@@ -194,7 +219,10 @@ final class PostController extends AbstractController
 			$post = PostFactory::update($request->getContent(), $post);
 		} catch (Throwable $e) {
 			
-			return $this->jsonMessage(Response::HTTP_BAD_REQUEST, $e->getMessage());
+			return $this->jsonMessage(
+				Response::HTTP_BAD_REQUEST,
+				$e->getMessage()
+			);
 		}
 		
 		$eventDispatcher->dispatch(new TimeStampableUpdatedEvent($post));
@@ -220,12 +248,18 @@ final class PostController extends AbstractController
 		
 		if (! $post) {
 			
-			return $this->jsonMessage(Response::HTTP_NOT_FOUND, sprintf('Post with id "%s" not found', $postId));
+			return $this->jsonMessage(
+				Response::HTTP_NOT_FOUND,
+				sprintf('Post with id "%s" not found', $postId)
+			);
 		}
 		
 		if (! $image) {
 			
-			return $this->jsonMessage(Response::HTTP_NOT_FOUND, sprintf('Image with id "%s" not found', $imageId));
+			return $this->jsonMessage(
+				Response::HTTP_NOT_FOUND,
+				sprintf('Image with id "%s" not found', $imageId)
+			);
 		}
 		
 		$this->denyAccessUnlessGranted(PostVoter::EDIT, $post);
@@ -253,12 +287,18 @@ final class PostController extends AbstractController
 		
 		if (! $post) {
 			
-			return $this->jsonMessage(Response::HTTP_NOT_FOUND, sprintf('Post with id "%s" not found', $postId));
+			return $this->jsonMessage(
+				Response::HTTP_NOT_FOUND,
+				sprintf('Post with id "%s" not found', $postId)
+			);
 		}
 		
 		if (! $category) {
 			
-			return $this->jsonMessage(Response::HTTP_NOT_FOUND, sprintf('Category with id "%s" not found', $categoryId));
+			return $this->jsonMessage(
+				Response::HTTP_NOT_FOUND,
+				sprintf('Category with id "%s" not found', $categoryId)
+			);
 		}
 		
 		$this->denyAccessUnlessGranted(PostVoter::EDIT, $post);
@@ -285,16 +325,25 @@ final class PostController extends AbstractController
 		
 		if (! $post) {
 			
-			return $this->jsonMessage(Response::HTTP_NOT_FOUND, sprintf('Post with id "%s" not found', $postId));
+			return $this->jsonMessage(
+				Response::HTTP_NOT_FOUND,
+				sprintf('Post with id "%s" not found', $postId)
+			);
 		}
 		
 		$tagIds = (json_decode($request->getContent()))->tags;
 		
 		$tags = $tagRepository->findBy(['id' => $tagIds]);
 		
-		if (count($tags) > 1) {
+		if (count($tags) < 1) {
 			
-			return $this->jsonMessage(Response::HTTP_BAD_REQUEST, sprintf('No tags found for id\'s "%s"', implode(', ', $tagIds)));
+			return $this->jsonMessage(
+				Response::HTTP_BAD_REQUEST,
+				sprintf(
+					'No tags found for id\'s "%s"',
+					implode(', ', $tagIds)
+				)
+			);
 		}
 		
 		$this->denyAccessUnlessGranted(PostVoter::EDIT, $post);
@@ -307,7 +356,7 @@ final class PostController extends AbstractController
 	}
 	
 	/**
-	 * @Route("/{id}/trash", name="post.delete", methods={"DELETE"}, requirements={"id"="[a-f0-9]{8}\-[a-f0-9]{4}\-4[a-f0-9]{3}\-(8|9|a|b)[a-f0-9]{3}\-[a-f0-9]{12}"})
+	 * @Route("/{id}/trash", name="post.trash", methods={"DELETE"}, requirements={"id"="[a-f0-9]{8}\-[a-f0-9]{4}\-4[a-f0-9]{3}\-(8|9|a|b)[a-f0-9]{3}\-[a-f0-9]{12}"})
 	 * @param  string  $id
 	 * @return JsonResponse
 	 */
@@ -319,7 +368,10 @@ final class PostController extends AbstractController
 		
 		if (! $post) {
 			
-			return $this->jsonMessage(Response::HTTP_NOT_FOUND, sprintf('Post with id "%s" not found', $id));
+			return $this->jsonMessage(
+				Response::HTTP_NOT_FOUND,
+				sprintf('Post with id "%s" not found', $id)
+			);
 		}
 		
 		$this->denyAccessUnlessGranted(PostVoter::DELETE, $post);
@@ -344,7 +396,10 @@ final class PostController extends AbstractController
 		
 		if (! $post) {
 			
-			return $this->jsonMessage(Response::HTTP_NOT_FOUND, sprintf('Post with id "%s" not found', $id));
+			return $this->jsonMessage(
+				Response::HTTP_NOT_FOUND,
+				sprintf('Post with id "%s" not found', $id)
+			);
 		}
 		
 		$this->denyAccessUnlessGranted(PostVoter::DELETE, $post);
@@ -354,7 +409,8 @@ final class PostController extends AbstractController
 			if (! $post->isTrashed()) {
 				
 				return $this->jsonMessage(
-					Response::HTTP_FORBIDDEN, sprintf('Post is not yet trashed. Either send the post to trash or use the forceable delete option.')
+					Response::HTTP_FORBIDDEN,
+					'Post is not yet trashed. Either send the post to trash or use the forceable delete option.'
 				);
 			}
 		}

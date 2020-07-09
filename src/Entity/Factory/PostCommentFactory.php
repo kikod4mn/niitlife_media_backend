@@ -47,7 +47,7 @@ class PostCommentFactory implements BaseFactoryInterface
 	 */
 	public function validArrayKeys(array $data): void
 	{
-		if (! isset($data['body'])) {
+		if (! array_key_exists('body', $data)) {
 			throw new ArrayKeyNotSetException('Key "body" not set on raw post data!');
 		}
 	}
