@@ -2,17 +2,15 @@
 
 declare(strict_types = 1);
 
-namespace App\Controller\PostComment;
+namespace App\Controller\ImageComment;
 
 use App\Controller\Concerns\JsonNormalizedMessages;
 use App\Controller\Concerns\JsonNormalizedResponse;
-use App\Entity\Event\AuthorableCreatedEvent;
-use App\Entity\Event\TimeStampableCreatedEvent;
-use App\Entity\Event\UuidableCreatedEvent;
+use App\Entity\Event\TimeStampableUpdatedEvent;
 use App\Entity\User;
-use App\Repository\PostRepository;
-use App\Security\Voter\PostCommentVoter;
-use App\Service\EntityService\PostCommentService;
+use App\Repository\ImageCommentRepository;
+use App\Security\Voter\ImageCommentVoter;
+use App\Service\EntityService\ImageCommentService;
 use Doctrine\ORM\EntityManagerInterface;
 use Psr\EventDispatcher\EventDispatcherInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -21,7 +19,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 
-class CreateController extends AbstractController
+class UpdateController extends AbstractController
 {
 	use JsonNormalizedResponse, JsonNormalizedMessages;
 	
@@ -36,9 +34,9 @@ class CreateController extends AbstractController
 	private EventDispatcherInterface $eventDispatcher;
 	
 	/**
-	 * @var PostRepository
+	 * @var ImageCommentRepository
 	 */
-	private PostRepository $postRepository;
+	private ImageCommentRepository $commentRepository;
 	
 	/**
 	 * @var ValidatorInterface
@@ -48,36 +46,33 @@ class CreateController extends AbstractController
 	public function __construct(
 		EntityManagerInterface $entityManager,
 		EventDispatcherInterface $eventDispatcher,
-		PostRepository $postRepository,
+		ImageCommentRepository $commentRepository,
 		ValidatorInterface $validator
 	)
 	{
-		$this->entityManager   = $entityManager;
-		$this->eventDispatcher = $eventDispatcher;
-		$this->postRepository  = $postRepository;
-		$this->validator       = $validator;
+		$this->entityManager     = $entityManager;
+		$this->eventDispatcher   = $eventDispatcher;
+		$this->commentRepository = $commentRepository;
+		$this->validator         = $validator;
 	}
 	
 	public function __invoke(string $id, Request $request): JsonResponse
 	{
 		$this->denyAccessUnlessGranted(User::ROLE_COMMENTATOR);
 		
-		$post = $this->getPostRepository()->find($id);
+		$comment = $this->getCommentRepository()->find($id);
 		
-		if (! $post) {
+		if (! $comment) {
 			
 			return $this->jsonMessage(
 				Response::HTTP_NOT_FOUND,
-				sprintf(
-					'Comment with id "%s" not found. Cannot post comment for a nonexistent post.',
-					$id
-				)
+				sprintf('Comment with id "%s" not found', $id)
 			);
 		}
 		
-		$comment = PostCommentService::create($request->getContent());
+		$comment = ImageCommentService::update($request->getContent(), $comment);
 		
-		$this->denyAccessUnlessGranted(PostCommentVoter::CREATE, $comment);
+		$this->denyAccessUnlessGranted(ImageCommentVoter::EDIT, $comment);
 		
 		$violations = $this->getValidator()->validate($comment);
 		
@@ -86,16 +81,11 @@ class CreateController extends AbstractController
 			return $this->jsonViolations($violations);
 		}
 		
-		$comment->setPost($post);
+		$this->getEventDispatcher()->dispatch(new TimeStampableUpdatedEvent($comment));
 		
-		$this->getEventDispatcher()->dispatch(new AuthorableCreatedEvent($comment));
-		$this->getEventDispatcher()->dispatch(new TimeStampableCreatedEvent($comment));
-		$this->getEventDispatcher()->dispatch(new UuidableCreatedEvent($comment));
-		
-		$this->getEntityManager()->persist($comment);
 		$this->getEntityManager()->flush();
 		
-		return $this->jsonNormalized($post, ['post:read']);
+		return $this->jsonNormalized($comment->getPost(), ['image:read']);
 	}
 	
 	public function getEntityManager(): EntityManagerInterface
@@ -108,9 +98,9 @@ class CreateController extends AbstractController
 		return $this->eventDispatcher;
 	}
 	
-	public function getPostRepository(): PostRepository
+	public function getCommentRepository(): ImageCommentRepository
 	{
-		return $this->postRepository;
+		return $this->commentRepository;
 	}
 	
 	public function getValidator(): ValidatorInterface

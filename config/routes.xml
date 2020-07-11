@@ -6,7 +6,7 @@
 
     <!-- POST ROUTES -->
 
-    <route id="post.list" path="/posts/{page}" methods="GET"
+    <route id="post.list" path="/posts/{!page}" methods="GET"
            controller="App\Controller\Post\ListController">
         <default key="page">1</default>
         <requirement key="page">\d+</requirement>
@@ -94,67 +94,208 @@
 
     <!-- POST ROUTES -->
 
-    <!-- COMMENT ROUTES -->
+    <!-- POST COMMENT ROUTES -->
 
-    <route id="comments.for.post.list" path="/posts/{id}/comments/{page}" methods="GET"
+    <route id="post.comment.list" path="/posts/{id}/comments/{page}" methods="GET"
            controller="App\Controller\PostComment\ListController">
         <default key="page">1</default>
         <requirement key="page">\d+</requirement>
         <requirement key="id">[a-f0-9]{8}\-[a-f0-9]{4}\-4[a-f0-9]{3}\-(8|9|a|b)[a-f0-9]{3}\-[a-f0-9]{12}</requirement>
     </route>
 
-    <route id="comment.create" path="/posts/{id}/comments" methods="POST"
+    <route id="post.comment.create" path="/posts/{id}/comments" methods="POST"
            controller="App\Controller\PostComment\CreateController">
         <requirement key="id">[a-f0-9]{8}\-[a-f0-9]{4}\-4[a-f0-9]{3}\-(8|9|a|b)[a-f0-9]{3}\-[a-f0-9]{12}</requirement>
     </route>
 
-    <route id="comment.update" path="/comments/{id}/update" methods="PUT"
+    <route id="post.comment.update" path="/posts/comments/{id}/update" methods="PUT"
            controller="App\Controller\PostComment\UpdateController">
         <requirement key="id">[a-f0-9]{8}\-[a-f0-9]{4}\-4[a-f0-9]{3}\-(8|9|a|b)[a-f0-9]{3}\-[a-f0-9]{12}</requirement>
     </route>
 
-    <route id="comment.publish" path="/comments/{id}/publish" methods="GET"
+    <route id="post.comment.publish" path="/posts/comments/{id}/publish" methods="GET"
            controller="App\Controller\PostComment\PublishController">
         <requirement key="id">[a-f0-9]{8}\-[a-f0-9]{4}\-4[a-f0-9]{3}\-(8|9|a|b)[a-f0-9]{3}\-[a-f0-9]{12}</requirement>
     </route>
 
-    <route id="comment.un.publish" path="/comments/{id}/un-publish" methods="GET"
+    <route id="post.comment.un.publish" path="/posts/comments/{id}/un-publish" methods="GET"
            controller="App\Controller\PostComment\UnPublishController">
         <requirement key="id">[a-f0-9]{8}\-[a-f0-9]{4}\-4[a-f0-9]{3}\-(8|9|a|b)[a-f0-9]{3}\-[a-f0-9]{12}</requirement>
     </route>
 
-    <route id="comment.trash" path="/comments/{id}/trash" methods="DELETE"
+    <route id="post.comment.trash" path="/posts/comments/{id}/trash" methods="DELETE"
            controller="App\Controller\PostComment\TrashController">
         <requirement key="id">[a-f0-9]{8}\-[a-f0-9]{4}\-4[a-f0-9]{3}\-(8|9|a|b)[a-f0-9]{3}\-[a-f0-9]{12}</requirement>
     </route>
 
-    <route id="comment.un.trash" path="/comments/{id}/un-trash" methods="GET"
+    <route id="post.comment.un.trash" path="/posts/comments/{id}/un-trash" methods="GET"
            controller="App\Controller\PostComment\UnTrashController">
         <requirement key="id">[a-f0-9]{8}\-[a-f0-9]{4}\-4[a-f0-9]{3}\-(8|9|a|b)[a-f0-9]{3}\-[a-f0-9]{12}</requirement>
     </route>
 
-    <route id="comment.destroy" path="/comments/{id}/destroy" methods="DELETE"
+    <route id="post.comment.destroy" path="/posts/comments/{id}/destroy" methods="DELETE"
            controller="App\Controller\PostComment\DestroyController">
         <requirement key="id">[a-f0-9]{8}\-[a-f0-9]{4}\-4[a-f0-9]{3}\-(8|9|a|b)[a-f0-9]{3}\-[a-f0-9]{12}</requirement>
     </route>
 
-    <route id="comment.like" path="/comments/{id}/like" methods="GET"
+    <route id="post.comment.like" path="/posts/comments/{id}/like" methods="GET"
            controller="App\Controller\PostComment\LikeController">
         <requirement key="id">[a-f0-9]{8}\-[a-f0-9]{4}\-4[a-f0-9]{3}\-(8|9|a|b)[a-f0-9]{3}\-[a-f0-9]{12}</requirement>
     </route>
 
-    <route id="comments.un.like" path="/comments/{id}/un-like" methods="GET"
+    <route id="post.comment.un.like" path="/posts/comments/{id}/un-like" methods="GET"
            controller="App\Controller\PostComment\UnLikeController">
         <requirement key="id">[a-f0-9]{8}\-[a-f0-9]{4}\-4[a-f0-9]{3}\-(8|9|a|b)[a-f0-9]{3}\-[a-f0-9]{12}</requirement>
     </route>
 
-    <!-- COMMENT ROUTES -->
+    <!-- POST COMMENT ROUTES -->
 
+    <!-- IMAGE ROUTES -->
 
-    <!-- if the action is implemented as the __invoke() method of the
-         controller class, you can skip the '::method_name' part:
-         controller="App\Controller\BlogController"/> -->
+    <route id="image.list" path="/images/{!page}" methods="GET"
+           controller="App\Controller\Image\ListController">
+        <default key="page">1</default>
+        <requirement key="page">\d+</requirement>
+    </route>
+
+    <route id="image.by.id" path="/images/{id}" methods="GET"
+           controller="App\Controller\Image\FindByIdController">
+        <requirement key="id">[a-f0-9]{8}\-[a-f0-9]{4}\-4[a-f0-9]{3}\-(8|9|a|b)[a-f0-9]{3}\-[a-f0-9]{12}</requirement>
+    </route>
+
+    <route id="image.by.slug" path="/images/{slug}" methods="GET"
+           controller="App\Controller\Image\FindBySlugController">
+        <requirement key="slug">^[a-zA-Z0-9-_]+$</requirement>
+    </route>
+
+    <route id="image.create" path="/images" methods="POST"
+           controller="App\Controller\Image\CreateController"/>
+
+    <route id="image.update" path="/image/{id}/update" methods="PUT"
+           controller="App\Controller\Image\UpdateController">
+        <requirement key="id">[a-f0-9]{8}\-[a-f0-9]{4}\-4[a-f0-9]{3}\-(8|9|a|b)[a-f0-9]{3}\-[a-f0-9]{12}</requirement>
+    </route>
+
+    <route id="image.update.category" path="/images/{id}/category/update" methods="PUT"
+           controller="App\Controller\Image\CategoryController">
+        <requirement key="id">[a-f0-9]{8}\-[a-f0-9]{4}\-4[a-f0-9]{3}\-(8|9|a|b)[a-f0-9]{3}\-[a-f0-9]{12}</requirement>
+    </route>
+
+    <route id="image.update.tags" path="/images/{id}/tags/update" methods="PUT"
+           controller="App\Controller\Image\TagsController">
+        <requirement key="id">[a-f0-9]{8}\-[a-f0-9]{4}\-4[a-f0-9]{3}\-(8|9|a|b)[a-f0-9]{3}\-[a-f0-9]{12}</requirement>
+    </route>
+
+    <route id="images.add.tag" path="/images/{id}/tag/{tagId}/add" methods="GET"
+           controller="App\Controller\Image\AddTagController">
+        <requirement key="id">[a-f0-9]{8}\-[a-f0-9]{4}\-4[a-f0-9]{3}\-(8|9|a|b)[a-f0-9]{3}\-[a-f0-9]{12}</requirement>
+        <requirement key="tagId">[a-f0-9]{8}\-[a-f0-9]{4}\-4[a-f0-9]{3}\-(8|9|a|b)[a-f0-9]{3}\-[a-f0-9]{12}</requirement>
+    </route>
+
+    <route id="image.remove.tags" path="/images/{id}/tag/{tagId}/remove" methods="GET"
+           controller="App\Controller\Image\RemoveTagController">
+        <requirement key="id">[a-f0-9]{8}\-[a-f0-9]{4}\-4[a-f0-9]{3}\-(8|9|a|b)[a-f0-9]{3}\-[a-f0-9]{12}</requirement>
+        <requirement key="tagId">[a-f0-9]{8}\-[a-f0-9]{4}\-4[a-f0-9]{3}\-(8|9|a|b)[a-f0-9]{3}\-[a-f0-9]{12}</requirement>
+    </route>
+
+    <route id="image.publish" path="/images/{id}/publish" methods="GET"
+           controller="App\Controller\Image\PublishController">
+        <requirement key="id">[a-f0-9]{8}\-[a-f0-9]{4}\-4[a-f0-9]{3}\-(8|9|a|b)[a-f0-9]{3}\-[a-f0-9]{12}</requirement>
+    </route>
+
+    <route id="image.un.publish" path="/images/{id}/un-publish" methods="GET"
+           controller="App\Controller\Image\UnPublishController">
+        <requirement key="id">[a-f0-9]{8}\-[a-f0-9]{4}\-4[a-f0-9]{3}\-(8|9|a|b)[a-f0-9]{3}\-[a-f0-9]{12}</requirement>
+    </route>
+
+    <route id="image.trash" path="/images/{id}/trash" methods="DELETE"
+           controller="App\Controller\Image\TrashController">
+        <requirement key="id">[a-f0-9]{8}\-[a-f0-9]{4}\-4[a-f0-9]{3}\-(8|9|a|b)[a-f0-9]{3}\-[a-f0-9]{12}</requirement>
+    </route>
+
+    <route id="image.un.trash" path="/images/{id}/un-trash" methods="GET"
+           controller="App\Controller\Image\UnTrashController">
+        <requirement key="id">[a-f0-9]{8}\-[a-f0-9]{4}\-4[a-f0-9]{3}\-(8|9|a|b)[a-f0-9]{3}\-[a-f0-9]{12}</requirement>
+    </route>
+
+    <route id="image.destroy" path="/images/{id}/destroy" methods="DELETE"
+           controller="App\Controller\Image\DestroyController">
+        <requirement key="id">[a-f0-9]{8}\-[a-f0-9]{4}\-4[a-f0-9]{3}\-(8|9|a|b)[a-f0-9]{3}\-[a-f0-9]{12}</requirement>
+    </route>
+
+    <route id="image.like" path="/images/{id}/like" methods="GET"
+           controller="App\Controller\Image\LikeController">
+        <requirement key="id">[a-f0-9]{8}\-[a-f0-9]{4}\-4[a-f0-9]{3}\-(8|9|a|b)[a-f0-9]{3}\-[a-f0-9]{12}</requirement>
+    </route>
+
+    <route id="image.un.like" path="/images/{id}/un-like" methods="GET"
+           controller="App\Controller\Image\UnLikeController">
+        <requirement key="id">[a-f0-9]{8}\-[a-f0-9]{4}\-4[a-f0-9]{3}\-(8|9|a|b)[a-f0-9]{3}\-[a-f0-9]{12}</requirement>
+    </route>
+
+    <!-- IMAGE ROUTES -->
+
+    <!-- IMAGE COMMENTS ROUTES -->
+
+    <route id="image.comment.list" path="/images/{id}/comments/{page}" methods="GET"
+           controller="App\Controller\ImageComment\ListController">
+        <default key="page">1</default>
+        <requirement key="page">\d+</requirement>
+        <requirement key="id">[a-f0-9]{8}\-[a-f0-9]{4}\-4[a-f0-9]{3}\-(8|9|a|b)[a-f0-9]{3}\-[a-f0-9]{12}</requirement>
+    </route>
+
+    <route id="image.comment.create" path="/images/{id}/comments" methods="POST"
+           controller="App\Controller\ImageComment\CreateController">
+        <requirement key="id">[a-f0-9]{8}\-[a-f0-9]{4}\-4[a-f0-9]{3}\-(8|9|a|b)[a-f0-9]{3}\-[a-f0-9]{12}</requirement>
+    </route>
+
+    <route id="image.comment.update" path="/images/comments/{id}/update" methods="PUT"
+           controller="App\Controller\ImageComment\UpdateController">
+        <requirement key="id">[a-f0-9]{8}\-[a-f0-9]{4}\-4[a-f0-9]{3}\-(8|9|a|b)[a-f0-9]{3}\-[a-f0-9]{12}</requirement>
+    </route>
+
+    <route id="image.comment.publish" path="/images/comments/{id}/publish" methods="GET"
+           controller="App\Controller\ImageComment\PublishController">
+        <requirement key="id">[a-f0-9]{8}\-[a-f0-9]{4}\-4[a-f0-9]{3}\-(8|9|a|b)[a-f0-9]{3}\-[a-f0-9]{12}</requirement>
+    </route>
+
+    <route id="image.comment.un.publish" path="/images/comments/{id}/un-publish" methods="GET"
+           controller="App\Controller\ImageComment\UnPublishController">
+        <requirement key="id">[a-f0-9]{8}\-[a-f0-9]{4}\-4[a-f0-9]{3}\-(8|9|a|b)[a-f0-9]{3}\-[a-f0-9]{12}</requirement>
+    </route>
+
+    <route id="image.comment.trash" path="/images/comments/{id}/trash" methods="DELETE"
+           controller="App\Controller\ImageComment\TrashController">
+        <requirement key="id">[a-f0-9]{8}\-[a-f0-9]{4}\-4[a-f0-9]{3}\-(8|9|a|b)[a-f0-9]{3}\-[a-f0-9]{12}</requirement>
+    </route>
+
+    <route id="image.comment.un.trash" path="/images/comments/{id}/un-trash" methods="GET"
+           controller="App\Controller\ImageComment\UnTrashController">
+        <requirement key="id">[a-f0-9]{8}\-[a-f0-9]{4}\-4[a-f0-9]{3}\-(8|9|a|b)[a-f0-9]{3}\-[a-f0-9]{12}</requirement>
+    </route>
+
+    <route id="image.comment.destroy" path="/images/comments/{id}/destroy" methods="DELETE"
+           controller="App\Controller\ImageComment\DestroyController">
+        <requirement key="id">[a-f0-9]{8}\-[a-f0-9]{4}\-4[a-f0-9]{3}\-(8|9|a|b)[a-f0-9]{3}\-[a-f0-9]{12}</requirement>
+    </route>
+
+    <route id="image.comment.like" path="/images/comments/{id}/like" methods="GET"
+           controller="App\Controller\ImageComment\LikeController">
+        <requirement key="id">[a-f0-9]{8}\-[a-f0-9]{4}\-4[a-f0-9]{3}\-(8|9|a|b)[a-f0-9]{3}\-[a-f0-9]{12}</requirement>
+    </route>
+
+    <route id="image.comment.un.like" path="/images/comments/{id}/un-like" methods="GET"
+           controller="App\Controller\ImageComment\UnLikeController">
+        <requirement key="id">[a-f0-9]{8}\-[a-f0-9]{4}\-4[a-f0-9]{3}\-(8|9|a|b)[a-f0-9]{3}\-[a-f0-9]{12}</requirement>
+    </route>
+
+    <!-- IMAGE COMMENTS ROUTES -->
+
+    <!-- SECURITY ROUTES -->
 
     <route id="security.register" path="/register" methods="POST"
            controller="App\Controller\Security\UserRegisterController"/>
+
+    <!-- SECURITY ROUTES -->
+
 </routes>

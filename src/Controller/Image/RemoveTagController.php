@@ -2,19 +2,19 @@
 
 declare(strict_types = 1);
 
-namespace App\Controller\Post;
+namespace App\Controller\Image;
 
 use App\Controller\Concerns\JsonNormalizedMessages;
 use App\Entity\User;
-use App\Repository\PostRepository;
+use App\Repository\ImageRepository;
 use App\Repository\TagRepository;
-use App\Security\Voter\PostVoter;
+use App\Security\Voter\ImageVoter;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
 
-class AddTagController extends AbstractController
+class RemoveTagController extends AbstractController
 {
 	use JsonNormalizedMessages;
 	
@@ -24,9 +24,9 @@ class AddTagController extends AbstractController
 	private EntityManagerInterface $entityManager;
 	
 	/**
-	 * @var PostRepository
+	 * @var ImageRepository
 	 */
-	private PostRepository $postRepository;
+	private ImageRepository $imageRepository;
 	
 	/**
 	 * @var TagRepository
@@ -35,13 +35,13 @@ class AddTagController extends AbstractController
 	
 	public function __construct(
 		EntityManagerInterface $entityManager,
-		PostRepository $postRepository,
+		ImageRepository $imageRepository,
 		TagRepository $tagRepository
 	)
 	{
-		$this->entityManager  = $entityManager;
-		$this->postRepository = $postRepository;
-		$this->tagRepository  = $tagRepository;
+		$this->entityManager   = $entityManager;
+		$this->imageRepository = $imageRepository;
+		$this->tagRepository   = $tagRepository;
 	}
 	
 	public function __invoke(string $id, string $tagId): JsonResponse
@@ -61,22 +61,22 @@ class AddTagController extends AbstractController
 			);
 		}
 		
-		$post = $this->getPostRepository()->find($id);
+		$image = $this->getImageRepository()->find($id);
 		
-		if (! $post) {
+		if (! $image) {
 			
 			return $this->jsonMessage(
 				Response::HTTP_BAD_REQUEST,
 				sprintf(
-					'No post found for id\'s "%s"',
-					$id
+					'No tag found for id\'s "%s"',
+					$tagId
 				)
 			);
 		}
 		
-		$this->denyAccessUnlessGranted(PostVoter::EDIT, $post);
+		$this->denyAccessUnlessGranted(ImageVoter::EDIT, $image);
 		
-		$post->addTag($tag);
+		$image->removeTag($tag);
 		
 		$this->getEntityManager()->flush();
 		
@@ -88,9 +88,9 @@ class AddTagController extends AbstractController
 		return $this->entityManager;
 	}
 	
-	public function getPostRepository(): PostRepository
+	public function getImageRepository(): ImageRepository
 	{
-		return $this->postRepository;
+		return $this->imageRepository;
 	}
 	
 	public function getTagRepository(): TagRepository

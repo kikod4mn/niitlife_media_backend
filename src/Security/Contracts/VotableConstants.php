@@ -34,5 +34,10 @@ interface VotableConstants
 	/**
 	 * @var string
 	 */
+	const RESTORE = 'RESTORE';
+	
+	/**
+	 * @var string
+	 */
 	const DELETE = 'DELETE';
 }

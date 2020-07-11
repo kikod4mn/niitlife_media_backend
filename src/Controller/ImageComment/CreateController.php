@@ -2,7 +2,7 @@
 
 declare(strict_types = 1);
 
-namespace App\Controller\PostComment;
+namespace App\Controller\ImageComment;
 
 use App\Controller\Concerns\JsonNormalizedMessages;
 use App\Controller\Concerns\JsonNormalizedResponse;
@@ -10,9 +10,9 @@ use App\Entity\Event\AuthorableCreatedEvent;
 use App\Entity\Event\TimeStampableCreatedEvent;
 use App\Entity\Event\UuidableCreatedEvent;
 use App\Entity\User;
-use App\Repository\PostRepository;
-use App\Security\Voter\PostCommentVoter;
-use App\Service\EntityService\PostCommentService;
+use App\Repository\ImageRepository;
+use App\Security\Voter\ImageCommentVoter;
+use App\Service\EntityService\ImageCommentService;
 use Doctrine\ORM\EntityManagerInterface;
 use Psr\EventDispatcher\EventDispatcherInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -36,9 +36,9 @@ class CreateController extends AbstractController
 	private EventDispatcherInterface $eventDispatcher;
 	
 	/**
-	 * @var PostRepository
+	 * @var ImageRepository
 	 */
-	private PostRepository $postRepository;
+	private ImageRepository $imageRepository;
 	
 	/**
 	 * @var ValidatorInterface
@@ -48,13 +48,13 @@ class CreateController extends AbstractController
 	public function __construct(
 		EntityManagerInterface $entityManager,
 		EventDispatcherInterface $eventDispatcher,
-		PostRepository $postRepository,
+		ImageRepository $imageRepository,
 		ValidatorInterface $validator
 	)
 	{
 		$this->entityManager   = $entityManager;
 		$this->eventDispatcher = $eventDispatcher;
-		$this->postRepository  = $postRepository;
+		$this->imageRepository = $imageRepository;
 		$this->validator       = $validator;
 	}
 	
@@ -62,22 +62,22 @@ class CreateController extends AbstractController
 	{
 		$this->denyAccessUnlessGranted(User::ROLE_COMMENTATOR);
 		
-		$post = $this->getPostRepository()->find($id);
+		$post = $this->getImageRepository()->find($id);
 		
 		if (! $post) {
 			
 			return $this->jsonMessage(
 				Response::HTTP_NOT_FOUND,
 				sprintf(
-					'Comment with id "%s" not found. Cannot post comment for a nonexistent post.',
+					'Post with id "%s" not found. Cannot post comment for a nonexistent post.',
 					$id
 				)
 			);
 		}
 		
-		$comment = PostCommentService::create($request->getContent());
+		$comment = ImageCommentService::create($request->getContent());
 		
-		$this->denyAccessUnlessGranted(PostCommentVoter::CREATE, $comment);
+		$this->denyAccessUnlessGranted(ImageCommentVoter::CREATE, $comment);
 		
 		$violations = $this->getValidator()->validate($comment);
 		
@@ -95,7 +95,7 @@ class CreateController extends AbstractController
 		$this->getEntityManager()->persist($comment);
 		$this->getEntityManager()->flush();
 		
-		return $this->jsonNormalized($post, ['post:read']);
+		return $this->jsonNormalized($post, ['image:read']);
 	}
 	
 	public function getEntityManager(): EntityManagerInterface
@@ -108,9 +108,9 @@ class CreateController extends AbstractController
 		return $this->eventDispatcher;
 	}
 	
-	public function getPostRepository(): PostRepository
+	public function getImageRepository(): ImageRepository
 	{
-		return $this->postRepository;
+		return $this->imageRepository;
 	}
 	
 	public function getValidator(): ValidatorInterface
