@@ -18,8 +18,10 @@ use App\Entity\Contracts\Sluggable;
 use App\Entity\Contracts\TimeStampable;
 use App\Entity\Contracts\Trashable;
 use App\Entity\Contracts\Viewable;
+use DateTimeInterface;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
+use Ramsey\Uuid\UuidInterface;
 
 class Image extends AbstractEntity implements Authorable, TimeStampable, Publishable, Sluggable, Likeable, Viewable, Trashable
 {
@@ -28,9 +30,19 @@ class Image extends AbstractEntity implements Authorable, TimeStampable, Publish
 	public const SLUGGABLE_FIELD = 'title';
 	
 	/**
+	 * @var null|UuidInterface
+	 */
+	protected ?UuidInterface $id = null;
+	
+	/**
 	 * @var null|string
 	 */
 	protected ?string $title = null;
+	
+	/**
+	 * @var null|string
+	 */
+	protected ?string $slug = null;
 	
 	/**
 	 * @var null|string
@@ -76,6 +88,36 @@ class Image extends AbstractEntity implements Authorable, TimeStampable, Publish
 	 * @var Collection
 	 */
 	protected Collection $tags;
+	
+	/**
+	 * @var int
+	 */
+	protected int $likeCount = 0;
+	
+	/**
+	 * @var int
+	 */
+	protected int $weeklyLikeCount = 0;
+	
+	/**
+	 * @var null|DateTimeInterface
+	 */
+	protected ?DateTimeInterface $trashedAt = null;
+	
+	/**
+	 * @var DateTimeInterface
+	 */
+	protected ?DateTimeInterface $publishedAt = null;
+	
+	/**
+	 * @var null|DateTimeInterface
+	 */
+	protected ?DateTimeInterface $createdAt = null;
+	
+	/**
+	 * @var null|DateTimeInterface
+	 */
+	protected ?DateTimeInterface $updatedAt = null;
 	
 	/**
 	 * Image constructor.

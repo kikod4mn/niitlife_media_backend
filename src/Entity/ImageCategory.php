@@ -4,9 +4,20 @@ namespace App\Entity;
 
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
+use Ramsey\Uuid\UuidInterface;
 
 class ImageCategory extends BaseCategory
 {
+	/**
+	 * @var null|UuidInterface
+	 */
+	protected ?UuidInterface $id = null;
+	
+	/**
+	 * @var null|string
+	 */
+	protected ?string $title = null;
+	
 	/**
 	 * @var Collection
 	 */

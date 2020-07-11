@@ -5,17 +5,19 @@ declare(strict_types = 1);
 namespace App\Entity;
 
 use App\Entity\AbstractEntity\AbstractEntity;
-use App\Entity\Concerns\FilterProfanitiesTrait;
 use App\Entity\Concerns\TimeStampableTrait;
 use App\Entity\Contracts\TimeStampable;
-use App\Security\Concerns\ValidatesPassword;
+use DateTimeInterface;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
+use Ramsey\Uuid\UuidInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
+use Symfony\Component\Serializer\Annotation\Groups;
+use Symfony\Component\Validator\Constraints as Assert;
 
 class User extends AbstractEntity implements UserInterface, TimeStampable
 {
-	use ValidatesPassword, FilterProfanitiesTrait, TimeStampableTrait;
+	use TimeStampableTrait;
 	
 	public const ROLE_MUTED               = 'ROLE_MUTED';
 	
@@ -30,6 +32,26 @@ class User extends AbstractEntity implements UserInterface, TimeStampable
 	public const ROLE_SUPER_ADMINISTRATOR = 'ROLE_SUPER_ADMINISTRATOR';
 	
 	/**
+	 * @Groups({
+	 *     "post:list", "post:read", "postComment:list", "postComment:read",
+	 *     "imageComment:list", "imageComment:read"
+	 *     })
+	 * @var null|UuidInterface
+	 */
+	protected ?UuidInterface $id = null;
+	
+	/**
+	 * @Groups({
+	 *     "post:list", "post:read", "postComment:list", "postComment:read",
+	 *     "imageComment:list", "imageComment:read", "user:write", "user:read"
+	 *     })
+	 * @Assert\NotBlank(message="Username cannot be blank.")
+	 * @Assert\Length(
+	 *     min="6",
+	 *     minMessage="Username must be at least {{ limit }} characters long.",
+	 *     max="250",
+	 *     maxMessage="Username must not exceed {{ limit }} characters."
+	 * )
 	 * @var null|string
 	 */
 	protected ?string $username = null;
@@ -40,21 +62,49 @@ class User extends AbstractEntity implements UserInterface, TimeStampable
 	protected ?string $password = null;
 	
 	/**
+	 * @Groups({"user:write", "user:update"})
+	 * @Assert\NotBlank(message="Password cannot be blank.")
+	 * @Assert\Regex(
+	 *     pattern="(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9]).{8,}",
+	 *     message="Minimum length is 8. The password must also contain one uppercase, one lowercase letter and one digit."
+	 * )
 	 * @var null|string
 	 */
 	protected ?string $plainPassword = null;
 	
 	/**
+	 * @Groups({"user:write", "user:update"})
+	 * @Assert\NotBlank(message="Repeat password cannot be blank.")
+	 * @Assert\Expression(
+	 *     expression="this.getPlainPassword() === this.getRetypedPlainPassword()",
+	 *     message="Passwords do not match. Please type them again."
+	 *     )
 	 * @var null|string
 	 */
 	protected ?string $retypedPlainPassword = null;
 	
 	/**
+	 * @Groups({"user:write", "user:update"})
+	 * @Assert\NotBlank(message="Email cannot be blank.")
+	 * @Assert\Email(message="Please enter a valid email to sign up.")
+	 * @Assert\Length(
+	 *     max="250",
+	 *     maxMessage="Email cannot exceed {{ limit }} characters."
+	 * )
 	 * @var null|string
 	 */
 	protected ?string $email = null;
 	
 	/**
+	 * @Groups({
+	 *     "post:list", "post:read", "postComment:list", "postComment:read",
+	 *     "imageComment:list", "imageComment:read", "user:write", "user:read"
+	 *     })
+	 * @Assert\NotBlank(message="Full name cannot be blank.")
+	 * @Assert\Length(
+	 *     max="250",
+	 *     maxMessage="Full name cannot exceed {{ limit }} characters."
+	 * )
 	 * @var null|string
 	 */
 	protected ?string $fullname = null;
@@ -68,6 +118,17 @@ class User extends AbstractEntity implements UserInterface, TimeStampable
 	 * @var bool
 	 */
 	protected bool $activated = false;
+	
+	/**
+	 * @Groups({"post:read", "post:list"})
+	 * @var null|DateTimeInterface
+	 */
+	protected ?DateTimeInterface $createdAt = null;
+	
+	/**
+	 * @var null|DateTimeInterface
+	 */
+	protected ?DateTimeInterface $updatedAt = null;
 	
 	/**
 	 * @var Collection
@@ -155,7 +216,7 @@ class User extends AbstractEntity implements UserInterface, TimeStampable
 	 */
 	public function setUsername(string $username): self
 	{
-		$this->username = $this->cleanString($username);
+		$this->username = $username;
 		
 		return $this;
 	}
@@ -263,7 +324,7 @@ class User extends AbstractEntity implements UserInterface, TimeStampable
 	 */
 	public function setFullname(string $fullname): self
 	{
-		$this->fullname = $this->cleanString($fullname);
+		$this->fullname = $fullname;
 		
 		return $this;
 	}

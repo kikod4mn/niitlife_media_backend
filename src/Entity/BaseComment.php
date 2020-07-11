@@ -20,11 +20,6 @@ abstract class BaseComment extends AbstractEntity implements Authorable, TimeSta
 	use AuthorableTrait, TimeStampableTrait, PublishableTrait, LikableTrait, CountableLikesTrait, TrashableTrait;
 	
 	/**
-	 * @var null|string
-	 */
-	protected ?string $body = null;
-	
-	/**
 	 * @return null|string
 	 */
 	public function getBody(): ?string

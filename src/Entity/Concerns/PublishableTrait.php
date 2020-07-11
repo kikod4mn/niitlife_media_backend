@@ -10,11 +10,6 @@ use DateTimeInterface;
 trait PublishableTrait
 {
 	/**
-	 * @var DateTimeInterface
-	 */
-	protected ?DateTimeInterface $publishedAt = null;
-	
-	/**
 	 * @return bool
 	 */
 	public function isPublished(): ?bool

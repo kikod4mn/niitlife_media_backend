@@ -62,13 +62,24 @@ class PostService extends AbstractService implements AbstractServiceInterface
 					),
 					new Length(
 						[
-							'min'        => 15,
+							'min'        => 20,
 							'minMessage' => 'Post body must be at least {{ limit }} characters long.',
+							'max'        => 65150,
+							'maxMessage' => 'Post body must be not exceed {{ limit }} characters.',
 						]
 					),
 				],
 			],
 		
 		];
+	}
+	
+	/**
+	 * @param  array  $data
+	 * @return null|array
+	 */
+	public static function rawConstraints(array $data)
+	{
+		return null;
 	}
 }

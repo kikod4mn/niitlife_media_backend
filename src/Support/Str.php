@@ -697,7 +697,7 @@ class Str
 	{
 		$sanitizer = Sanitizer::create(
 			[
-				'max_input_length' => 30000,
+				'max_input_length' => 120000,
 			]
 		);
 		

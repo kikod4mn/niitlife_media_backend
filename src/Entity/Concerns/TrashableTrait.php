@@ -6,16 +6,9 @@ namespace App\Entity\Concerns;
 
 use App\Entity\Contracts\Trashable;
 use DateTimeInterface;
-use Doctrine\ORM\Mapping as ORM;
 
 trait TrashableTrait
 {
-	/**
-	 * @ORM\Column(type="datetime", nullable=true)
-	 * @var null|DateTimeInterface
-	 */
-	protected ?DateTimeInterface $trashedAt = null;
-	
 	/**
 	 * @return null|DateTimeInterface
 	 */

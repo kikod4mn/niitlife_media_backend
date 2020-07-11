@@ -7,16 +7,6 @@ namespace App\Entity\Concerns;
 trait CountableLikesTrait
 {
 	/**
-	 * @var int
-	 */
-	protected int $likeCount = 0;
-	
-	/**
-	 * @var int
-	 */
-	protected int $weeklyLikeCount = 0;
-	
-	/**
 	 * @return null|int
 	 */
 	public function getLikeCount(): ?int

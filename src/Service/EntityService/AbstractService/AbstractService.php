@@ -48,6 +48,13 @@ abstract class AbstractService
 	abstract public static function getProps(): array;
 	
 	/**
+	 * Use this to hook extra constraints in before individual props are validated.
+	 * @param  array  $data
+	 * @return null|array
+	 */
+	abstract public static function rawConstraints(array $data);
+	
+	/**
 	 * @return array
 	 */
 	public static function getEditingDenied(): array
@@ -163,9 +170,22 @@ abstract class AbstractService
 	 */
 	protected static function make(array $data)
 	{
+		$rawErrors = static::rawConstraints($data);
+		
+		if ($rawErrors) {
+			
+			return $rawErrors;
+		}
+		
 		foreach (static::$props as $prop => $params) {
 			
-			$value = static::value($data, $prop);
+			try {
+				
+				$value = static::value($data, $prop);
+			} catch (Throwable $e) {
+				
+				continue;
+			}
 			
 			$method = static::method($prop);
 			
@@ -192,6 +212,13 @@ abstract class AbstractService
 	 */
 	protected static function edit(array $data)
 	{
+		$rawErrors = static::rawConstraints($data);
+		
+		if ($rawErrors) {
+			
+			return $rawErrors;
+		}
+		
 		foreach (static::$props as $prop => $params) {
 			
 			// If editing is denied on the prop, continue to next loop.
@@ -274,7 +301,14 @@ abstract class AbstractService
 				
 				foreach ($errors as $violation) {
 					
-					$messages[$prop] = $violation->getMessage();
+					if (array_key_exists($prop, $messages)) {
+						
+						$messages[$prop] .= " {$violation->getMessage()}";
+						
+					} else {
+						
+						$messages[$prop] = $violation->getMessage();
+					}
 				}
 				
 				return $messages;

@@ -3,9 +3,15 @@
 namespace App\Entity;
 
 use App\Entity\AbstractEntity\AbstractEntity;
+use Ramsey\Uuid\UuidInterface;
 
 class UserProfile extends AbstractEntity
 {
+	/**
+	 * @var null|UuidInterface
+	 */
+	protected ?UuidInterface $id = null;
+	
 	/**
 	 * @var null|User
 	 */

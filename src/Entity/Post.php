@@ -19,10 +19,12 @@ use App\Entity\Contracts\TimeStampable;
 use App\Entity\Contracts\Trashable;
 use App\Entity\Contracts\Viewable;
 use App\Support\Str;
+use DateTimeInterface;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
-use Exception;
+use Ramsey\Uuid\UuidInterface;
 use Symfony\Component\Serializer\Annotation\Groups;
+use Symfony\Component\Validator\Constraints as Assert;
 
 class Post extends AbstractEntity implements Authorable, Sluggable, Publishable, TimeStampable, Viewable, Likeable, Trashable
 {
@@ -31,46 +33,110 @@ class Post extends AbstractEntity implements Authorable, Sluggable, Publishable,
 	public const SLUGGABLE_FIELD = 'title';
 	
 	/**
-	 * @Groups({"post:list"})
+	 * @Groups({"post:list", "post:read", "postCategory:read"})
+	 * @var null|UuidInterface
+	 */
+	protected ?UuidInterface $id = null;
+	
+	/**
+	 * @Groups({"post:list", "post:read", "post:update", "post:write", "postCategory:read"})
+	 * @Assert\NotBlank(message="Title cannot be blank.")
+	 * @Assert\Length(
+	 *     min="15",
+	 *     minMessage="Title must be at least {{ limit }} characters long.",
+	 *     max="250",
+	 *     maxMessage="Title cannot exceed {{ limit }} characters."
+	 * )
 	 * @var null|string
 	 */
 	protected ?string $title = null;
 	
 	/**
-	 * @Groups({"post:list"})
+	 * @Groups({"post:list", "post:read"})
+	 * @var null|string
+	 */
+	protected ?string $slug = null;
+	
+	/**
+	 * @Groups({"post:read", "post:update", "post:write"})
+	 * @Assert\NotBlank(message="Body cannot be blank.")
+	 * @Assert\Length(
+	 *     min="15",
+	 *     minMessage="Body must be at least {{ limit }} characters long.",
+	 *     max="65150",
+	 *     maxMessage="Body cannot exceed {{ limit }} characters."
+	 * )
 	 * @var null|string
 	 */
 	protected ?string $body = null;
 	
 	/**
+	 * @Groups({"post:list", "postCategory:read"})
 	 * @var null|string
 	 */
 	protected ?string $snippet = null;
 	
 	/**
+	 * @Groups({"post:list", "post:read"})
 	 * @var null|PostCategory
 	 */
 	protected ?PostCategory $category = null;
 	
 	/**
+	 * @Groups({"post:list", "post:read"})
 	 * @var null|User
 	 */
 	protected ?User $author = null;
 	
 	/**
+	 * @Groups({"post:read"})
 	 * @var Collection
 	 */
 	protected Collection $comments;
 	
 	/**
+	 * @Groups({"post:read"})
 	 * @var Collection
 	 */
 	protected Collection $likedBy;
 	
 	/**
+	 * @Groups({"post:read", "post:update", "post:write"})
 	 * @var Collection
 	 */
 	protected Collection $tags;
+	
+	/**
+	 * @Groups({"post:list", "post:read"})
+	 * @var int
+	 */
+	protected int $likeCount = 0;
+	
+	/**
+	 * @var int
+	 */
+	protected int $weeklyLikeCount = 0;
+	
+	/**
+	 * @var null|DateTimeInterface
+	 */
+	protected ?DateTimeInterface $trashedAt = null;
+	
+	/**
+	 * @var DateTimeInterface
+	 */
+	protected ?DateTimeInterface $publishedAt = null;
+	
+	/**
+	 * @Groups({"post:read", "post:list"})
+	 * @var null|DateTimeInterface
+	 */
+	protected ?DateTimeInterface $createdAt = null;
+	
+	/**
+	 * @var null|DateTimeInterface
+	 */
+	protected ?DateTimeInterface $updatedAt = null;
 	
 	/**
 	 * Post constructor.

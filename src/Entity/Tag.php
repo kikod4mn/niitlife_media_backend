@@ -5,10 +5,19 @@ namespace App\Entity;
 use App\Entity\AbstractEntity\AbstractEntity;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
+use Ramsey\Uuid\UuidInterface;
+use Symfony\Component\Serializer\Annotation\Groups;
 
 class Tag extends AbstractEntity
 {
 	/**
+	 * @Groups({"post:list", "post:read", "tag:read"})
+	 * @var null|UuidInterface
+	 */
+	protected ?UuidInterface $id = null;
+	
+	/**
+	 * @Groups({"post:list", "post:read", "tag:read", "tag:write", "tag:update"})
 	 * @var null|string
 	 */
 	protected ?string $title = null;

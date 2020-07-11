@@ -6,14 +6,10 @@ namespace App\Entity\Concerns;
 
 use Ramsey\Uuid\Uuid;
 use Ramsey\Uuid\UuidInterface;
+use Symfony\Component\Serializer\Annotation\Groups;
 
 trait UuidableTrait
 {
-	/**
-	 * @var null|UuidInterface
-	 */
-	protected ?UuidInterface $id = null;
-	
 	/**
 	 * @return null|string
 	 * NOTE : Symfony does not like strict types, attempt to cast the Uuid to a string before returning.

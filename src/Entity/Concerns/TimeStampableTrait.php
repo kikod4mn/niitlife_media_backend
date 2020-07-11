@@ -12,16 +12,6 @@ use DateTimeInterface;
 trait TimeStampableTrait
 {
 	/**
-	 * @var null|DateTimeInterface
-	 */
-	protected ?DateTimeInterface $createdAt = null;
-	
-	/**
-	 * @var null|DateTimeInterface
-	 */
-	protected ?DateTimeInterface $updatedAt = null;
-	
-	/**
 	 * Set usage of timestamps on the entity.
 	 * @var bool
 	 */
