@@ -2,19 +2,19 @@
 
 declare(strict_types = 1);
 
-namespace App\Controller\Post;
+namespace App\Controller\PostComment;
 
 use App\Controller\Concerns\JsonNormalizedMessages;
-use App\Entity\Contracts\Trashable;
+use App\Entity\Contracts\Publishable;
 use App\Entity\User;
-use App\Repository\PostRepository;
-use App\Security\Voter\PostVoter;
+use App\Repository\PostCommentRepository;
+use App\Security\Voter\PostCommentVoter;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
 
-class TrashController extends AbstractController
+class PublishController extends AbstractController
 {
 	use JsonNormalizedMessages;
 	
@@ -24,38 +24,41 @@ class TrashController extends AbstractController
 	private EntityManagerInterface $entityManager;
 	
 	/**
-	 * @var PostRepository
+	 * @var PostCommentRepository
 	 */
-	private PostRepository $postRepository;
+	private PostCommentRepository $commentRepository;
 	
 	public function __construct(
 		EntityManagerInterface $entityManager,
-		PostRepository $postRepository
+		PostCommentRepository $commentRepository
 	)
 	{
-		$this->entityManager  = $entityManager;
-		$this->postRepository = $postRepository;
+		$this->entityManager     = $entityManager;
+		$this->commentRepository = $commentRepository;
 	}
 	
 	public function __invoke(string $id): JsonResponse
 	{
-		$this->denyAccessUnlessGranted(User::ROLE_ADMINISTRATOR);
+		$this->denyAccessUnlessGranted(User::ROLE_COMMENTATOR);
 		
-		$post = $this->getPostRepository()->find($id);
+		$comment = $this->getCommentRepository()->find($id);
 		
-		if (! $post) {
+		if (! $comment) {
 			
 			return $this->jsonMessage(
 				Response::HTTP_NOT_FOUND,
-				sprintf('Post with id "%s" not found', $id)
+				sprintf(
+					'Comment with id "%s" not found',
+					$id
+				)
 			);
 		}
 		
-		$this->denyAccessUnlessGranted(PostVoter::TRASH, $post);
+		$this->denyAccessUnlessGranted(PostCommentVoter::TRASH, $comment);
 		
-		if ($post instanceof Trashable) {
+		if ($comment instanceof Publishable) {
 			
-			$post->trash();
+			$comment->publish();
 		}
 		
 		$this->getEntityManager()->flush();
@@ -68,8 +71,8 @@ class TrashController extends AbstractController
 		return $this->entityManager;
 	}
 	
-	public function getPostRepository(): PostRepository
+	public function getCommentRepository(): PostCommentRepository
 	{
-		return $this->postRepository;
+		return $this->commentRepository;
 	}
 }

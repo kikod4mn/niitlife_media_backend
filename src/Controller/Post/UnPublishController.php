@@ -5,7 +5,7 @@ declare(strict_types = 1);
 namespace App\Controller\Post;
 
 use App\Controller\Concerns\JsonNormalizedMessages;
-use App\Entity\Contracts\Trashable;
+use App\Entity\Contracts\Publishable;
 use App\Entity\User;
 use App\Repository\PostRepository;
 use App\Security\Voter\PostVoter;
@@ -14,7 +14,7 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
 
-class TrashController extends AbstractController
+class UnPublishController extends AbstractController
 {
 	use JsonNormalizedMessages;
 	
@@ -51,11 +51,11 @@ class TrashController extends AbstractController
 			);
 		}
 		
-		$this->denyAccessUnlessGranted(PostVoter::TRASH, $post);
+		$this->denyAccessUnlessGranted(PostVoter::PUBLISH, $post);
 		
-		if ($post instanceof Trashable) {
+		if ($post instanceof Publishable) {
 			
-			$post->trash();
+			$post->unPublish();
 		}
 		
 		$this->getEntityManager()->flush();

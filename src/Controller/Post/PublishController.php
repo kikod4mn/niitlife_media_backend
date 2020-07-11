@@ -5,6 +5,7 @@ declare(strict_types = 1);
 namespace App\Controller\Post;
 
 use App\Controller\Concerns\JsonNormalizedMessages;
+use App\Entity\Contracts\Publishable;
 use App\Entity\User;
 use App\Repository\PostRepository;
 use App\Security\Voter\PostVoter;
@@ -52,7 +53,10 @@ class PublishController extends AbstractController
 		
 		$this->denyAccessUnlessGranted(PostVoter::PUBLISH, $post);
 		
-		$post->publish();
+		if ($post instanceof Publishable) {
+			
+			$post->publish();
+		}
 		
 		$this->getEntityManager()->flush();
 		
