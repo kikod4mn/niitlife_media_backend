@@ -8,6 +8,7 @@
       <w>stampable</w>
       <w>timestampable</w>
       <w>uuidable</w>
+      <w>uuids</w>
     </words>
   </dictionary>
 </component>

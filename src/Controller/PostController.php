@@ -5,29 +5,31 @@ declare(strict_types = 1);
 namespace App\Controller;
 
 use App\Controller\Concerns\ManagesEntities;
-use App\Controller\Concerns\SendsJsonMessages;
-use App\Controller\Concerns\NormalizesJson;
-use App\Controller\Concerns\UsesXmlMapping;
+use App\Controller\Concerns\JsonNormalizedMessages;
+use App\Controller\Concerns\JsonNormalizedResponse;
 use App\Entity\Contracts\Trashable;
 use App\Entity\Event\AuthorableCreatedEvent;
 use App\Entity\Event\SluggableCreatedEvent;
 use App\Entity\Event\TimeStampableCreatedEvent;
 use App\Entity\Event\TimeStampableUpdatedEvent;
 use App\Entity\Event\UuidableCreatedEvent;
-use App\Entity\Factory\PostFactory;
 use App\Entity\User;
 use App\Repository\ImageRepository;
 use App\Repository\PostCategoryRepository;
 use App\Repository\PostRepository;
 use App\Repository\TagRepository;
 use App\Security\Voter\PostVoter;
+use App\Service\EntityService\PostService;
 use Doctrine\ORM\EntityManagerInterface;
+use Doctrine\ORM\QueryBuilder;
 use Knp\Component\Pager\PaginatorInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Serializer\SerializerInterface;
+use Symfony\Component\Validator\Validator\ValidatorInterface;
 use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
 use Throwable;
 
@@ -36,7 +38,12 @@ use Throwable;
  */
 final class PostController extends AbstractController
 {
-	use UsesXmlMapping, SendsJsonMessages, NormalizesJson, ManagesEntities;
+	use JsonNormalizedMessages, JsonNormalizedResponse;
+	
+	/**
+	 * @var EntityManagerInterface
+	 */
+	private EntityManagerInterface $entityManager;
 	
 	/**
 	 * @var PostRepository
@@ -44,16 +51,31 @@ final class PostController extends AbstractController
 	private PostRepository $postRepository;
 	
 	/**
+	 * @var ValidatorInterface
+	 */
+	private ValidatorInterface $validator;
+	
+	/**
+	 * @var SerializerInterface
+	 */
+	private SerializerInterface $serializer;
+	
+	/**
 	 * PostController constructor.
-	 * @param  string                  $projectDir
 	 * @param  EntityManagerInterface  $entityManager
 	 * @param  PostRepository          $postRepository
+	 * @param  ValidatorInterface      $validator
+	 * @param  SerializerInterface     $serializer
 	 */
-	public function __construct(string $projectDir, EntityManagerInterface $entityManager, PostRepository $postRepository)
+	public function __construct(
+		EntityManagerInterface $entityManager, PostRepository $postRepository,
+		ValidatorInterface $validator, SerializerInterface $serializer
+	)
 	{
-		$this->createSerializer($projectDir);
 		$this->postRepository = $postRepository;
 		$this->entityManager  = $entityManager;
+		$this->validator      = $validator;
+		$this->serializer     = $serializer;
 	}
 	
 	/**
@@ -163,15 +185,24 @@ final class PostController extends AbstractController
 	{
 		$this->denyAccessUnlessGranted(User::ROLE_ADMINISTRATOR);
 		
-		try {
+		//		try {
+		//
+		//			$post = PostFactory::make($request->getContent());
+		//		} catch (Throwable $e) {
+		//
+		//			return $this->jsonMessage(
+		//				Response::HTTP_BAD_REQUEST,
+		//				$e->getMessage()
+		//			);
+		//		}
+		
+		$post = PostService::create($request->getContent());
+		
+		$violations = $this->getValidator()->validate($post);
+		
+		if (count($violations) > 1) {
 			
-			$post = PostFactory::make($request->getContent());
-		} catch (Throwable $e) {
-			
-			return $this->jsonMessage(
-				Response::HTTP_BAD_REQUEST,
-				$e->getMessage()
-			);
+			return $this->jsonViolations($violations);
 		}
 		
 		$this->denyAccessUnlessGranted(PostVoter::CREATE, $post);
@@ -233,13 +264,12 @@ final class PostController extends AbstractController
 	}
 	
 	/**
-	 * @Route("/{postId}/image/{imageId}/edit", name="post.edit.image", methods={"PUT"}, requirements={"postId"="[a-f0-9]{8}\-[a-f0-9]{4}\-4[a-f0-9]{3}\-(8|9|a|b)[a-f0-9]{3}\-[a-f0-9]{12}", "imageId"="[a-f0-9]{8}\-[a-f0-9]{4}\-4[a-f0-9]{3}\-(8|9|a|b)[a-f0-9]{3}\-[a-f0-9]{12}"})
+	 * @Route("/{postId}/image/update", name="post.update.image", methods={"PUT"}, requirements={"postId"="[a-f0-9]{8}\-[a-f0-9]{4}\-4[a-f0-9]{3}\-(8|9|a|b)[a-f0-9]{3}\-[a-f0-9]{12}", "imageId"="[a-f0-9]{8}\-[a-f0-9]{4}\-4[a-f0-9]{3}\-(8|9|a|b)[a-f0-9]{3}\-[a-f0-9]{12}"})
 	 * @param  string           $postId
-	 * @param  string           $imageId
 	 * @param  ImageRepository  $imageRepository
 	 * @return JsonResponse
 	 */
-	public function editImage(string $postId, string $imageId, ImageRepository $imageRepository): JsonResponse
+	public function updateImage(string $postId, ImageRepository $imageRepository): JsonResponse
 	{
 		$this->denyAccessUnlessGranted(User::ROLE_ADMINISTRATOR);
 		
@@ -272,13 +302,12 @@ final class PostController extends AbstractController
 	}
 	
 	/**
-	 * @Route("/{postId}/category/{categoryId}/edit", name="post.edit.category", methods={"PUT"}, requirements={"postId"="[a-f0-9]{8}\-[a-f0-9]{4}\-4[a-f0-9]{3}\-(8|9|a|b)[a-f0-9]{3}\-[a-f0-9]{12}", "categoryId"="[a-f0-9]{8}\-[a-f0-9]{4}\-4[a-f0-9]{3}\-(8|9|a|b)[a-f0-9]{3}\-[a-f0-9]{12}"})
+	 * @Route("/{postId}/category/update", name="post.update.category", methods={"PUT"}, requirements={"postId"="[a-f0-9]{8}\-[a-f0-9]{4}\-4[a-f0-9]{3}\-(8|9|a|b)[a-f0-9]{3}\-[a-f0-9]{12}", "categoryId"="[a-f0-9]{8}\-[a-f0-9]{4}\-4[a-f0-9]{3}\-(8|9|a|b)[a-f0-9]{3}\-[a-f0-9]{12}"})
 	 * @param  string                  $postId
-	 * @param  string                  $categoryId
 	 * @param  PostCategoryRepository  $categoryRepository
 	 * @return JsonResponse
 	 */
-	public function editCategory(string $postId, string $categoryId, PostCategoryRepository $categoryRepository): JsonResponse
+	public function updateCategory(string $postId, PostCategoryRepository $categoryRepository): JsonResponse
 	{
 		$this->denyAccessUnlessGranted(User::ROLE_ADMINISTRATOR);
 		
@@ -311,13 +340,13 @@ final class PostController extends AbstractController
 	}
 	
 	/**
-	 * @Route("/{postId}/tags/edit", name="post.edit.tags", methods={"PUT"} , requirements={"postId"="[a-f0-9]{8}\-[a-f0-9]{4}\-4[a-f0-9]{3}\-(8|9|a|b)[a-f0-9]{3}\-[a-f0-9]{12}"})
+	 * @Route("/{postId}/tags/update", name="post.update.tags", methods={"PUT"} , requirements={"postId"="[a-f0-9]{8}\-[a-f0-9]{4}\-4[a-f0-9]{3}\-(8|9|a|b)[a-f0-9]{3}\-[a-f0-9]{12}"})
 	 * @param  string         $postId
 	 * @param  Request        $request
 	 * @param  TagRepository  $tagRepository
 	 * @return JsonResponse
 	 */
-	public function editTags(string $postId, Request $request, TagRepository $tagRepository): JsonResponse
+	public function updateTags(string $postId, Request $request, TagRepository $tagRepository): JsonResponse
 	{
 		$this->denyAccessUnlessGranted(User::ROLE_ADMINISTRATOR);
 		
@@ -427,5 +456,34 @@ final class PostController extends AbstractController
 	public function getPostRepository(): PostRepository
 	{
 		return $this->postRepository;
+	}
+	
+	/**
+	 * @return ValidatorInterface
+	 */
+	public function getValidator(): ValidatorInterface
+	{
+		return $this->validator;
+	}
+	
+	/**
+	 * @return SerializerInterface
+	 */
+	public function getSerializer(): SerializerInterface
+	{
+		return $this->serializer;
+	}
+	
+	/**
+	 * @return EntityManagerInterface
+	 */
+	public function getEntityManager(): EntityManagerInterface
+	{
+		return $this->entityManager;
+	}
+	
+	public function getQueryBuilder(): QueryBuilder
+	{
+		return $this->getEntityManager()->createQueryBuilder();
 	}
 }

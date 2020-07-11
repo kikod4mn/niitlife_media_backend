@@ -10,17 +10,10 @@ use App\Service\EntityService\Exception\InvalidArrayKeysException;
 use App\Service\EntityService\Exception\MethodNotFoundException;
 use App\Support\Validate;
 use LogicException;
-use Symfony\Component\Validator\Validation;
-use Symfony\Component\Validator\Validator\ValidatorInterface;
 use Throwable;
 
 abstract class AbstractService
 {
-	/**
-	 * @var null|ValidatorInterface
-	 */
-	private static ?ValidatorInterface $validator = null;
-	
 	/**
 	 * The entity being created is saved in this variable.
 	 * @var mixed
@@ -46,13 +39,6 @@ abstract class AbstractService
 	 * @return array
 	 */
 	abstract public static function getProps(): array;
-	
-	/**
-	 * Use this to hook extra constraints in before individual props are validated.
-	 * @param  array  $data
-	 * @return null|array
-	 */
-	abstract public static function rawConstraints(array $data);
 	
 	/**
 	 * @return array
@@ -170,13 +156,6 @@ abstract class AbstractService
 	 */
 	protected static function make(array $data)
 	{
-		$rawErrors = static::rawConstraints($data);
-		
-		if ($rawErrors) {
-			
-			return $rawErrors;
-		}
-		
 		foreach (static::$props as $prop => $params) {
 			
 			try {
@@ -189,14 +168,6 @@ abstract class AbstractService
 			
 			$method = static::method($prop);
 			
-			$violations = static::constraints($params, $value, $prop);
-			
-			if ($violations) {
-				
-				return $violations;
-			}
-			
-			// Set the property on the entity if validation passes and additional methods are done.
 			static::$entity->$method(
 				static::callbacks($params, $value)
 			);
@@ -212,13 +183,6 @@ abstract class AbstractService
 	 */
 	protected static function edit(array $data)
 	{
-		$rawErrors = static::rawConstraints($data);
-		
-		if ($rawErrors) {
-			
-			return $rawErrors;
-		}
-		
 		foreach (static::$props as $prop => $params) {
 			
 			// If editing is denied on the prop, continue to next loop.
@@ -227,11 +191,6 @@ abstract class AbstractService
 				continue;
 			}
 			
-			// If no value is set for the property of class being worked,
-			// continue to next iteration of foreach.
-			// While editing, we do not need to set all the params.
-			// Still would only allow a prop to be set that is inside
-			// the array of props for the service.
 			try {
 				
 				$value = static::value($data, $prop);
@@ -242,14 +201,6 @@ abstract class AbstractService
 			
 			$method = static::method($prop);
 			
-			$violations = static::constraints($params, $value, $prop);
-			
-			if ($violations) {
-				
-				return $violations;
-			}
-			
-			// Set the property on the entity if validation passes and additional methods are done.
 			static::$entity->$method(
 				static::callbacks($params, $value)
 			);
@@ -290,34 +241,6 @@ abstract class AbstractService
 		return $data[$prop];
 	}
 	
-	protected static function constraints(array $params, $value, string $prop)
-	{
-		if (array_key_exists('constraints', $params) && ! Validate::blank($params['constraints'])) {
-			
-			$errors = static::validator()->validate($value, $params['constraints']);
-			
-			if (count($errors) > 0) {
-				$messages = [];
-				
-				foreach ($errors as $violation) {
-					
-					if (array_key_exists($prop, $messages)) {
-						
-						$messages[$prop] .= " {$violation->getMessage()}";
-						
-					} else {
-						
-						$messages[$prop] = $violation->getMessage();
-					}
-				}
-				
-				return $messages;
-			}
-		}
-		
-		return null;
-	}
-	
 	protected static function callbacks(array $params, $value)
 	{
 		if (array_key_exists('callbacks', $params) && ! Validate::blank($params['callbacks'])) {
@@ -329,19 +252,6 @@ abstract class AbstractService
 		}
 		
 		return $value;
-	}
-	
-	/**
-	 * @return ValidatorInterface
-	 */
-	protected static function validator(): ValidatorInterface
-	{
-		if (null === static::$validator) {
-			
-			static::$validator = Validation::createValidator();
-		}
-		
-		return static::$validator;
 	}
 	
 	/**

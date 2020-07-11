@@ -6,7 +6,7 @@ namespace App\Controller\Concerns;
 
 use Symfony\Component\HttpFoundation\JsonResponse;
 
-trait NormalizesJson
+trait JsonNormalizedResponse
 {
 	/**
 	 * @param         $data

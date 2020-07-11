@@ -10,6 +10,7 @@ use App\Service\EntityService\UserService;
 use Faker\Factory;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 class AmuseController extends AbstractController
 {
@@ -20,7 +21,7 @@ class AmuseController extends AbstractController
 	{
 		$faker = Factory::create();
 		
-		$rawPost1 = ['title' => $faker->realText(35), 'body' => $faker->realText(1000)];
+		$rawPost1 = ['title' => $faker->realText(10), 'body' => $faker->realText(1000)];
 		
 		$post1 = PostService::create($rawPost1);
 		$post2 = PostService::create(json_encode($rawPost1));

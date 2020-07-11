@@ -5,8 +5,8 @@ declare(strict_types = 1);
 namespace App\Controller;
 
 use App\Controller\Concerns\ManagesEntities;
-use App\Controller\Concerns\SendsJsonMessages;
-use App\Controller\Concerns\NormalizesJson;
+use App\Controller\Concerns\JsonNormalizedMessages;
+use App\Controller\Concerns\JsonNormalizedResponse;
 use App\Controller\Concerns\UsesXmlMapping;
 use App\Entity\Contracts\Trashable;
 use App\Entity\Event\AuthorableCreatedEvent;
@@ -30,7 +30,7 @@ use Throwable;
 
 class PostCommentController extends AbstractController
 {
-	use UsesXmlMapping, SendsJsonMessages, NormalizesJson, ManagesEntities;
+	use UsesXmlMapping, JsonNormalizedMessages, JsonNormalizedResponse, ManagesEntities;
 	
 	/**
 	 * @var PostCommentRepository
@@ -104,6 +104,11 @@ class PostCommentController extends AbstractController
 		return $this->json(['comments' => $comments, 'currentPage' => $currentPage, 'lastPage' => $lastPage]);
 	}
 	
+	/**
+	 * @Route("/comments/{id}", name="get.single.comment", methods={"GET"}, requirements={"postId"="[a-f0-9]{8}\-[a-f0-9]{4}\-4[a-f0-9]{3}\-(8|9|a|b)[a-f0-9]{3}\-[a-f0-9]{12}"})
+	 * @param  string  $id
+	 * @return JsonResponse
+	 */
 	public function one(string $id): JsonResponse
 	{
 		$comment = $this->commentRepository->find($id);
@@ -164,32 +169,21 @@ class PostCommentController extends AbstractController
 	}
 	
 	/**
-	 * @Route("/posts/{postId}/comments/{commentId}", name="comment.update", methods={"PUT"}, requirements={"postId"="[a-f0-9]{8}\-[a-f0-9]{4}\-4[a-f0-9]{3}\-(8|9|a|b)[a-f0-9]{3}\-[a-f0-9]{12}", "commentId"="[a-f0-9]{8}\-[a-f0-9]{4}\-4[a-f0-9]{3}\-(8|9|a|b)[a-f0-9]{3}\-[a-f0-9]{12}"})
-	 * @param  string                    $postId
-	 * @param  string                    $commentId
+	 * @Route("/comments/{id}/update", name="comment.update", methods={"PUT"}, requirements={"postId"="[a-f0-9]{8}\-[a-f0-9]{4}\-4[a-f0-9]{3}\-(8|9|a|b)[a-f0-9]{3}\-[a-f0-9]{12}", "commentId"="[a-f0-9]{8}\-[a-f0-9]{4}\-4[a-f0-9]{3}\-(8|9|a|b)[a-f0-9]{3}\-[a-f0-9]{12}"})
+	 * @param  string                    $id
 	 * @param  Request                   $request
-	 * @param  PostRepository            $postRepository
 	 * @param  EventDispatcherInterface  $eventDispatcher
 	 * @return JsonResponse
 	 */
 	public function update(
-		string $postId,
-		string $commentId,
+		string $id,
 		Request $request,
-		PostRepository $postRepository,
 		EventDispatcherInterface $eventDispatcher
 	): JsonResponse
 	{
 		$this->denyAccessUnlessGranted(User::ROLE_COMMENTATOR);
 		
-		$post = $postRepository->find($postId);
-		
-		if (! $post) {
-			
-			return $this->jsonMessage(Response::HTTP_NOT_FOUND, sprintf('Post with id "%s" not found. Cannot post comment for a nonexistent post.', $postId));
-		}
-		
-		$comment = $this->commentRepository->find($commentId);
+		$comment = $this->commentRepository->find($id);
 		
 		if (! $comment) {
 			
@@ -204,11 +198,11 @@ class PostCommentController extends AbstractController
 		
 		$this->getEntityManager()->flush();
 		
-		return $this->jsonNormalized($post, ['post:read']);
+		return $this->jsonNormalized($comment->getPost(), ['post:read']);
 	}
 	
 	/**
-	 * @Route("/{id}/trash", name="comment.trash", methods={"DELETE"}, requirements={"id"="[a-f0-9]{8}\-[a-f0-9]{4}\-4[a-f0-9]{3}\-(8|9|a|b)[a-f0-9]{3}\-[a-f0-9]{12}"})
+	 * @Route("/comments/{id}/trash", name="comment.trash", methods={"DELETE"}, requirements={"id"="[a-f0-9]{8}\-[a-f0-9]{4}\-4[a-f0-9]{3}\-(8|9|a|b)[a-f0-9]{3}\-[a-f0-9]{12}"})
 	 * @param  string  $id
 	 * @return JsonResponse
 	 */
@@ -233,7 +227,7 @@ class PostCommentController extends AbstractController
 	}
 	
 	/**
-	 * @Route("/{id}/destroy", name="comment.destroy", methods={"DELETE"}, requirements={"id"="[a-f0-9]{8}\-[a-f0-9]{4}\-4[a-f0-9]{3}\-(8|9|a|b)[a-f0-9]{3}\-[a-f0-9]{12}"})
+	 * @Route("/comments/{id}/destroy", name="comment.destroy", methods={"DELETE"}, requirements={"id"="[a-f0-9]{8}\-[a-f0-9]{4}\-4[a-f0-9]{3}\-(8|9|a|b)[a-f0-9]{3}\-[a-f0-9]{12}"})
 	 * @param  string  $id
 	 * @return JsonResponse
 	 */

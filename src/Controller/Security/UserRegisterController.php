@@ -5,8 +5,8 @@ declare(strict_types = 1);
 namespace App\Controller\Security;
 
 use App\Controller\Concerns\ManagesEntities;
-use App\Controller\Concerns\SendsJsonMessages;
-use App\Controller\Concerns\NormalizesJson;
+use App\Controller\Concerns\JsonNormalizedMessages;
+use App\Controller\Concerns\JsonNormalizedResponse;
 use App\Controller\Concerns\UsesXmlMapping;
 use App\Entity\Event\UserCreatedEvent;
 use App\Entity\Factory\UserFactory;
@@ -23,7 +23,7 @@ use Throwable;
 
 class UserRegisterController extends AbstractController
 {
-	use SendsJsonMessages;
+	use JsonNormalizedMessages;
 	
 	/**
 	 * @var EventDispatcherInterface

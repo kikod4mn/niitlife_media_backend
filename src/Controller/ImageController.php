@@ -5,8 +5,8 @@ declare(strict_types = 1);
 namespace App\Controller;
 
 use App\Controller\Concerns\ManagesEntities;
-use App\Controller\Concerns\NormalizesJson;
-use App\Controller\Concerns\SendsJsonMessages;
+use App\Controller\Concerns\JsonNormalizedResponse;
+use App\Controller\Concerns\JsonNormalizedMessages;
 use App\Controller\Concerns\UsesXmlMapping;
 use App\Entity\Contracts\Trashable;
 use App\Entity\Event\AuthorableCreatedEvent;
@@ -35,7 +35,7 @@ use Throwable;
  */
 class ImageController extends AbstractController
 {
-	use UsesXmlMapping, NormalizesJson, SendsJsonMessages, ManagesEntities;
+	use UsesXmlMapping, JsonNormalizedResponse, JsonNormalizedMessages, ManagesEntities;
 	
 	/**
 	 * @var ImageRepository
