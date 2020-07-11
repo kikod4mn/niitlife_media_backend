@@ -18,7 +18,7 @@ class Validate
 			return false;
 		}
 		
-		if (is_array($var) && $var !== []) {
+		if (is_array($var) && count($var) > 0) {
 			
 			return false;
 		}
