@@ -23,7 +23,7 @@ trait JsonNormalizedMessages
 	 * @param  array  $violations
 	 * @return JsonResponse
 	 */
-	protected function jsonViolations(array $violations): JsonResponse
+	protected function jsonViolations(iterable $violations): JsonResponse
 	{
 		$messages = [];
 		

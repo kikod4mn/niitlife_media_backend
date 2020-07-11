@@ -4,8 +4,81 @@
         xsi:schemaLocation="http://symfony.com/schema/routing
         https://symfony.com/schema/routing/routing-1.0.xsd">
 
-    <route id="blog_list" path="/blog"
-           controller="App\Controller\PostController::list"/>
+    <route id="post.list" path="/posts/{page}" methods="GET"
+           controller="App\Controller\Post\ListController">
+        <default key="page">1</default>
+        <requirement key="page">\d+</requirement>
+    </route>
+
+    <route id="post.by.id" path="/posts/{id}" methods="GET"
+           controller="App\Controller\Post\FindByIdController">
+        <requirement key="id">[a-f0-9]{8}\-[a-f0-9]{4}\-4[a-f0-9]{3}\-(8|9|a|b)[a-f0-9]{3}\-[a-f0-9]{12}</requirement>
+    </route>
+
+    <route id="post.by.slug" path="/posts/{slug}" methods="GET"
+           controller="App\Controller\Post\FindBySlugController">
+        <requirement key="slug">^[a-zA-Z0-9-_]+$</requirement>
+    </route>
+
+    <route id="post.create" path="/posts" methods="POST"
+           controller="App\Controller\Post\CreateController"/>
+
+    <route id="post.update" path="/posts/{id}/update" methods="PUT"
+           controller="App\Controller\Post\UpdateController">
+        <requirement key="id">[a-f0-9]{8}\-[a-f0-9]{4}\-4[a-f0-9]{3}\-(8|9|a|b)[a-f0-9]{3}\-[a-f0-9]{12}</requirement>
+    </route>
+
+    <route id="post.update.image" path="/posts/{id}/image/update" methods="PUT"
+           controller="App\Controller\Post\ImageController">
+        <requirement key="id">[a-f0-9]{8}\-[a-f0-9]{4}\-4[a-f0-9]{3}\-(8|9|a|b)[a-f0-9]{3}\-[a-f0-9]{12}</requirement>
+    </route>
+
+    <route id="post.update.category" path="/posts/{id}/category/update" methods="PUT"
+           controller="App\Controller\Post\CategoryController">
+        <requirement key="id">[a-f0-9]{8}\-[a-f0-9]{4}\-4[a-f0-9]{3}\-(8|9|a|b)[a-f0-9]{3}\-[a-f0-9]{12}</requirement>
+    </route>
+
+    <route id="post.update.tags" path="/posts/{id}/tags/update" methods="PUT"
+           controller="App\Controller\Post\TagsController">
+        <requirement key="id">[a-f0-9]{8}\-[a-f0-9]{4}\-4[a-f0-9]{3}\-(8|9|a|b)[a-f0-9]{3}\-[a-f0-9]{12}</requirement>
+    </route>
+
+    <route id="post.add.tag" path="/posts/{id}/tag/{tagId}/add" methods="GET"
+           controller="App\Controller\Post\AddTagController">
+        <requirement key="id">[a-f0-9]{8}\-[a-f0-9]{4}\-4[a-f0-9]{3}\-(8|9|a|b)[a-f0-9]{3}\-[a-f0-9]{12}</requirement>
+        <requirement key="tagId">[a-f0-9]{8}\-[a-f0-9]{4}\-4[a-f0-9]{3}\-(8|9|a|b)[a-f0-9]{3}\-[a-f0-9]{12}</requirement>
+    </route>
+
+    <route id="post.remove.tags" path="/posts/{id}/tag/{tagId}/remove" methods="GET"
+           controller="App\Controller\Post\RemoveTagController">
+        <requirement key="id">[a-f0-9]{8}\-[a-f0-9]{4}\-4[a-f0-9]{3}\-(8|9|a|b)[a-f0-9]{3}\-[a-f0-9]{12}</requirement>
+        <requirement key="tagId">[a-f0-9]{8}\-[a-f0-9]{4}\-4[a-f0-9]{3}\-(8|9|a|b)[a-f0-9]{3}\-[a-f0-9]{12}</requirement>
+    </route>
+
+    <route id="post.trash" path="/posts/{id}/trash" methods="DELETE"
+           controller="App\Controller\Post\TrashController">
+        <requirement key="id">[a-f0-9]{8}\-[a-f0-9]{4}\-4[a-f0-9]{3}\-(8|9|a|b)[a-f0-9]{3}\-[a-f0-9]{12}</requirement>
+    </route>
+
+    <route id="post.un.trash" path="/posts/{id}/un-trash" methods="GET"
+           controller="App\Controller\Post\UnTrashController">
+        <requirement key="id">[a-f0-9]{8}\-[a-f0-9]{4}\-4[a-f0-9]{3}\-(8|9|a|b)[a-f0-9]{3}\-[a-f0-9]{12}</requirement>
+    </route>
+
+    <route id="post.destroy" path="/posts/{id}/destroy" methods="DELETE"
+           controller="App\Controller\Post\DestroyController">
+        <requirement key="id">[a-f0-9]{8}\-[a-f0-9]{4}\-4[a-f0-9]{3}\-(8|9|a|b)[a-f0-9]{3}\-[a-f0-9]{12}</requirement>
+    </route>
+
+    <route id="post.like" path="/posts/{id}/like" methods="GET"
+           controller="App\Controller\Post\LikeController">
+        <requirement key="id">[a-f0-9]{8}\-[a-f0-9]{4}\-4[a-f0-9]{3}\-(8|9|a|b)[a-f0-9]{3}\-[a-f0-9]{12}</requirement>
+    </route>
+
+    <route id="post.un.like" path="/posts/{id}/un-like" methods="GET"
+           controller="App\Controller\Post\UnLikeController">
+        <requirement key="id">[a-f0-9]{8}\-[a-f0-9]{4}\-4[a-f0-9]{3}\-(8|9|a|b)[a-f0-9]{3}\-[a-f0-9]{12}</requirement>
+    </route>
 
     <!-- if the action is implemented as the __invoke() method of the
          controller class, you can skip the '::method_name' part:

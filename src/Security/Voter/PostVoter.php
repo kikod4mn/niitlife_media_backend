@@ -49,15 +49,12 @@ class PostVoter extends Voter implements VotableConstants, CheckablePermissions
 	{
 		switch ($attribute) {
 			case self::VIEW:
-				if ($subject instanceof Publishable) {
-					
-					return $subject->isPublished();
-				}
-				
-				return true;
+				return $subject->isPublished();
 			case self::CREATE:
 			case self::EDIT:
 			case self::DELETE:
+			case self::TRASH:
+			case self::PUBLISH:
 				return $this->isUserAdmin();
 		}
 		

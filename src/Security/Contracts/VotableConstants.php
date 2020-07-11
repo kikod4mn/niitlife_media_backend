@@ -24,5 +24,15 @@ interface VotableConstants
 	/**
 	 * @var string
 	 */
+	const PUBLISH = 'PUBLISH';
+	
+	/**
+	 * @var string
+	 */
+	const TRASH = 'TRASH';
+	
+	/**
+	 * @var string
+	 */
 	const DELETE = 'DELETE';
 }

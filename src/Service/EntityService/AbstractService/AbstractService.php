@@ -50,7 +50,7 @@ abstract class AbstractService
 	
 	/**
 	 * @param $data
-	 * @return string
+	 * @return mixed
 	 * @throws ArrayKeyNotSetException|ClassConstantNotDefinedException|MethodNotFoundException|InvalidArrayKeysException
 	 */
 	public static function create($data)
@@ -72,7 +72,7 @@ abstract class AbstractService
 	/**
 	 * @param $data
 	 * @param $entity
-	 * @return string
+	 * @return mixed
 	 * @throws MethodNotFoundException|InvalidArrayKeysException
 	 */
 	public static function update($data, $entity)
