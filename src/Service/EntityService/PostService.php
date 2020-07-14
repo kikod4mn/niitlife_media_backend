@@ -25,6 +25,11 @@ class PostService extends AbstractService implements AbstractServiceInterface
 			'title' => [
 				'callbacks' => [
 					function (string $title) {
+						if ($title === '') {
+							
+							return null;
+						}
+						
 						return Str::purify($title);
 					},
 				],
@@ -33,6 +38,11 @@ class PostService extends AbstractService implements AbstractServiceInterface
 			'body' => [
 				'callbacks' => [
 					function (string $body) {
+						if ($body === '') {
+							
+							return null;
+						}
+						
 						return Str::cleanse($body);
 					},
 				],

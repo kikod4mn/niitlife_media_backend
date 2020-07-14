@@ -2,25 +2,22 @@
 
 declare(strict_types = 1);
 
-namespace App\Controller\Image;
+namespace App\Controller\ImageCategory;
 
 use App\Controller\Concerns\JsonNormalizedMessages;
 use App\Controller\Concerns\JsonNormalizedResponse;
-use App\Entity\Event\SluggableEditedEvent;
-use App\Entity\Event\TimeStampableUpdatedEvent;
+use App\Entity\Event\SluggableCreatedEvent;
 use App\Entity\User;
-use App\Repository\ImageRepository;
-use App\Security\Voter\ImageVoter;
-use App\Service\EntityService\ImageService;
+use App\Security\Voter\ImageCategoryVoter;
+use App\Service\EntityService\ImageCategoryService;
 use Doctrine\ORM\EntityManagerInterface;
 use Psr\EventDispatcher\EventDispatcherInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 
-class UpdateController extends AbstractController
+class CreateController extends AbstractController
 {
 	use JsonNormalizedMessages, JsonNormalizedResponse;
 	
@@ -39,58 +36,38 @@ class UpdateController extends AbstractController
 	 */
 	private ValidatorInterface $validator;
 	
-	/**
-	 * @var ImageRepository
-	 */
-	private ImageRepository $imageRepository;
-	
 	public function __construct(
 		EntityManagerInterface $entityManager,
 		EventDispatcherInterface $eventDispatcher,
-		ValidatorInterface $validator,
-		ImageRepository $imageRepository
+		ValidatorInterface $validator
 	)
 	{
 		$this->entityManager   = $entityManager;
 		$this->eventDispatcher = $eventDispatcher;
 		$this->validator       = $validator;
-		$this->imageRepository = $imageRepository;
 	}
 	
 	public function __invoke(string $id, Request $request): JsonResponse
 	{
 		$this->denyAccessUnlessGranted(User::ROLE_ADMINISTRATOR);
 		
-		$image = $this->getImageRepository()->find($id);
+		$category = ImageCategoryService::create($request->getContent());
 		
-		if (! $image) {
-			
-			return $this->jsonMessage(
-				Response::HTTP_NOT_FOUND,
-				sprintf(
-					'Image with id "%s" not found',
-					$id
-				)
-			);
-		}
+		$this->denyAccessUnlessGranted(ImageCategoryVoter::CREATE, $category);
 		
-		$this->denyAccessUnlessGranted(ImageVoter::EDIT, $image);
-		
-		$image = ImageService::update($request->getContent(), $image);
-		
-		$violations = $this->getValidator()->validate($image);
+		$violations = $this->getValidator()->validate($category);
 		
 		if (count($violations) > 1) {
 			
 			return $this->jsonViolations($violations);
 		}
 		
-		$this->getEventDispatcher()->dispatch(new TimeStampableUpdatedEvent($image));
-		$this->getEventDispatcher()->dispatch(new SluggableEditedEvent($image));
+		$this->getEventDispatcher()->dispatch(new SluggableCreatedEvent($category));
 		
+		$this->getEntityManager()->persist($category);
 		$this->getEntityManager()->flush();
 		
-		return $this->jsonNormalized($image, ['image:read']);
+		return $this->jsonNormalized($category, ['category:read']);
 	}
 	
 	public function getEntityManager(): EntityManagerInterface
@@ -106,10 +83,5 @@ class UpdateController extends AbstractController
 	public function getValidator(): ValidatorInterface
 	{
 		return $this->validator;
-	}
-	
-	public function getImageRepository(): ImageRepository
-	{
-		return $this->imageRepository;
 	}
 }

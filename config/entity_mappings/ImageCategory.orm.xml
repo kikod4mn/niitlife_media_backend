@@ -15,6 +15,7 @@
         </id>
 
         <field name="title" length="100" unique="true"/>
+        <field name="slug" type="text" length="255" unique="true"/>
 
         <one-to-many field="images" target-entity="App\Entity\Image" mapped-by="category">
             <order-by>

@@ -16,6 +16,7 @@
         </id>
 
         <field name="title" length="200" unique="true"/>
+        <field name="slug" type="text" length="255" unique="true"/>
 
         <many-to-many field="posts" target-entity="App\Entity\Post" mapped-by="tags"/>
 

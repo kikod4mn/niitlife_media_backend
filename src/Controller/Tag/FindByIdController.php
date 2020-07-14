@@ -6,17 +6,12 @@ namespace App\Controller\Tag;
 
 use App\Controller\Concerns\JsonNormalizedMessages;
 use App\Controller\Concerns\JsonNormalizedResponse;
-use App\Entity\Image;
-use App\Entity\Post;
 use App\Repository\ImageRepository;
 use App\Repository\PostRepository;
 use App\Repository\TagRepository;
 use App\Security\Voter\ImageVoter;
 use App\Security\Voter\PostVoter;
 use Doctrine\ORM\EntityManagerInterface;
-use Doctrine\ORM\Query\Expr\Join;
-use Doctrine\ORM\QueryBuilder;
-use Knp\Component\Pager\PaginatorInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -30,11 +25,6 @@ class FindByIdController extends AbstractController
 	 * @var EntityManagerInterface
 	 */
 	private EntityManagerInterface $entityManager;
-	
-	/**
-	 * @var PaginatorInterface
-	 */
-	private PaginatorInterface $paginator;
 	
 	/**
 	 * @var SerializerInterface
@@ -58,7 +48,6 @@ class FindByIdController extends AbstractController
 	
 	public function __construct(
 		EntityManagerInterface $entityManager,
-		PaginatorInterface $paginator,
 		SerializerInterface $serializer,
 		TagRepository $tagRepository,
 		PostRepository $postRepository,
@@ -66,7 +55,6 @@ class FindByIdController extends AbstractController
 	)
 	{
 		$this->entityManager   = $entityManager;
-		$this->paginator       = $paginator;
 		$this->serializer      = $serializer;
 		$this->tagRepository   = $tagRepository;
 		$this->postRepository  = $postRepository;
@@ -88,19 +76,38 @@ class FindByIdController extends AbstractController
 			);
 		}
 		
-		$limit = $request->get('limit', 10);
+		$limit = (int) $request->get('limit', 10);
 		
-		[$posts, $postsLastPage] =
+		[$postResults, $postsLastPage] =
 			$this->getPostRepository()->getForTag(
 				$tag, $page, $limit / 2
 			)
 		;
 		
-		[$images, $imagesLastPage] =
+		[$imageResults, $imagesLastPage] =
 			$this->getImageRepository()->getForTag(
 				$tag, $page, $limit / 2
 			)
 		;
+		
+		$posts  = [];
+		$images = [];
+		
+		foreach ($postResults as $post) {
+			
+			if ($this->isGranted(PostVoter::VIEW, $post)) {
+				
+				$posts[] = $post;
+			}
+		}
+		
+		foreach ($imageResults as $image) {
+			
+			if ($this->isGranted(ImageVoter::VIEW, $image)) {
+				
+				$images[] = $image;
+			}
+		}
 		
 		return $this->json(
 			[
@@ -117,16 +124,6 @@ class FindByIdController extends AbstractController
 	public function getEntityManager(): EntityManagerInterface
 	{
 		return $this->entityManager;
-	}
-	
-	public function getQueryBuilder(): QueryBuilder
-	{
-		return $this->getEntityManager()->createQueryBuilder();
-	}
-	
-	public function getPaginator(): PaginatorInterface
-	{
-		return $this->paginator;
 	}
 	
 	public function getSerializer(): SerializerInterface

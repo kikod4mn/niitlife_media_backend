@@ -20,6 +20,7 @@ class PostCategoryFixtures extends BaseFixture
 		$this->createMany(
 			PostCategory::class, 12, function (PostCategory $category, $i) use ($faker) {
 			$category->setTitle($faker->realText(20));
+			$category->setSlug();
 		}
 		);
 		

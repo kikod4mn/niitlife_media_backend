@@ -20,6 +20,7 @@ class ImageCategoryFixtures extends BaseFixture
 		$this->createMany(
 			ImageCategory::class, 5, function (ImageCategory $category, $i) use ($faker) {
 			$category->setTitle($faker->word());
+			$category->setSlug();
 		}
 		);
 		

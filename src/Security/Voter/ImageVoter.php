@@ -49,14 +49,12 @@ class ImageVoter extends Voter implements VotableConstants, CheckablePermissions
 	{
 		switch ($attribute) {
 			case self::VIEW:
-				if ($subject instanceof Publishable) {
-					
-					return $subject->isPublished();
-				}
-				
-				return true;
+				return $subject->isPublished();
 			case self::CREATE:
 			case self::EDIT:
+			case self::PUBLISH:
+			case self::TRASH:
+			case self::RESTORE:
 			case self::DELETE:
 				return $this->isUserAdmin();
 		}

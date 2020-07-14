@@ -3,13 +3,19 @@
 namespace App\Entity;
 
 use App\Entity\AbstractEntity\AbstractEntity;
+use App\Entity\Concerns\SluggableTrait;
+use App\Entity\Contracts\Sluggable;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Ramsey\Uuid\UuidInterface;
 use Symfony\Component\Serializer\Annotation\Groups;
 
-class Tag extends AbstractEntity
+class Tag extends AbstractEntity implements Sluggable
 {
+	use SluggableTrait;
+	
+	const SLUGGABLE_FIELD = 'title';
+	
 	/**
 	 * @Groups({"post:list", "post:read", "tag:read"})
 	 * @var null|UuidInterface
@@ -21,6 +27,12 @@ class Tag extends AbstractEntity
 	 * @var null|string
 	 */
 	protected ?string $title = null;
+	
+	/**
+	 * @Groups({"post:list", "post:read", "tag:read", "tag:write", "tag:update"})
+	 * @var null|string
+	 */
+	protected ?string $slug = null;
 	
 	/**
 	 * @var Collection

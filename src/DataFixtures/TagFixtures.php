@@ -21,6 +21,7 @@ class TagFixtures extends BaseFixture implements DependentFixtureInterface
 		$this->createMany(
 			Tag::class, 12, function (Tag $tag, $i) use ($faker) {
 			$tag->setTitle($faker->word);
+			$tag->setSlug();
 		}
 		);
 		

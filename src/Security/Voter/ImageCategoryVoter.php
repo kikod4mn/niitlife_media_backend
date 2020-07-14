@@ -4,8 +4,7 @@ declare(strict_types = 1);
 
 namespace App\Security\Voter;
 
-use App\Entity\Contracts\Publishable;
-use App\Entity\Post;
+use App\Entity\ImageCategory;
 use App\Security\Concerns\ChecksPermissions;
 use App\Security\Contracts\CheckablePermissions;
 use App\Security\Contracts\VotableConstants;
@@ -14,7 +13,7 @@ use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
 use Symfony\Component\Security\Core\Authorization\Voter\Voter;
 use Symfony\Component\Security\Core\Security;
 
-class PostVoter extends Voter implements VotableConstants, CheckablePermissions
+class ImageCategoryVoter extends Voter implements VotableConstants, CheckablePermissions
 {
 	use ChecksPermissions;
 	
@@ -36,7 +35,7 @@ class PostVoter extends Voter implements VotableConstants, CheckablePermissions
 	public function supports(string $attribute, $subject): bool
 	{
 		return in_array($attribute, [self::VIEW, self::CREATE, self::EDIT, self::DELETE])
-			&& $subject instanceof Post;
+			&& $subject instanceof ImageCategory;
 	}
 	
 	/**

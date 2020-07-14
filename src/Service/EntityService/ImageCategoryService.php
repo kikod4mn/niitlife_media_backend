@@ -4,39 +4,36 @@ declare(strict_types = 1);
 
 namespace App\Service\EntityService;
 
-use App\Entity\ImageComment;
+use App\Entity\ImageCategory;
 use App\Service\EntityService\AbstractService\AbstractService;
 use App\Service\EntityService\Contracts\AbstractServiceInterface;
 use App\Support\Str;
 
-class ImageCommentService extends AbstractService implements AbstractServiceInterface
+class ImageCategoryService extends AbstractService implements AbstractServiceInterface
 {
 	/**
 	 * @var string
 	 */
-	const ENTITY = ImageComment::class;
+	const ENTITY = ImageCategory::class;
 	
-	/**
-	 * @return array
-	 */
 	public static function getProps(): array
 	{
 		return [
 			
-			'body' => [
+			'title' => [
 				
 				'callbacks' => [
-					function (string $body) {
-						if ($body === '') {
+					function (string $title) {
+						if ($title === '') {
 							
 							return null;
 						}
 						
-						return Str::purify($body);
+						return Str::purify($title);
 					},
 				],
+			
 			],
-		
 		];
 	}
 }

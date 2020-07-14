@@ -6,6 +6,7 @@ namespace App\Controller\Post;
 
 use App\Controller\Concerns\JsonNormalizedMessages;
 use App\Controller\Concerns\JsonNormalizedResponse;
+use App\Entity\Event\SluggableEditedEvent;
 use App\Entity\Event\TimeStampableUpdatedEvent;
 use App\Entity\User;
 use App\Repository\PostRepository;
@@ -66,7 +67,10 @@ class UpdateController extends AbstractController
 			
 			return $this->jsonMessage(
 				Response::HTTP_NOT_FOUND,
-				sprintf('Post with id "%s" not found', $id)
+				sprintf(
+					'Post with id "%s" not found',
+					$id
+				)
 			);
 		}
 		
@@ -82,6 +86,7 @@ class UpdateController extends AbstractController
 		}
 		
 		$this->getEventDispatcher()->dispatch(new TimeStampableUpdatedEvent($post));
+		$this->getEventDispatcher()->dispatch(new SluggableEditedEvent($post));
 		
 		$this->getEntityManager()->flush();
 		

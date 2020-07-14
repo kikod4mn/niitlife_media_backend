@@ -28,6 +28,11 @@ class UserService extends AbstractService implements AbstractServiceInterface
 			'username' => [
 				'callbacks' => [
 					function (string $username) {
+						if ($username === '') {
+							
+							return null;
+						}
+						
 						return Str::purify($username);
 					},
 				],
@@ -36,6 +41,11 @@ class UserService extends AbstractService implements AbstractServiceInterface
 			'fullname' => [
 				'callbacks' => [
 					function (string $fullname) {
+						if ($fullname === '') {
+							
+							return null;
+						}
+						
 						return Str::purify($fullname);
 					},
 				],

@@ -2,9 +2,10 @@
 
 declare(strict_types = 1);
 
-namespace App\Controller\Post;
+namespace App\Controller\ImageCategory;
 
-use App\Security\Voter\PostVoter;
+use App\Repository\ImageCategoryRepository;
+use App\Security\Voter\ImageVoter;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\QueryBuilder;
 use Knp\Component\Pager\PaginatorInterface;
@@ -13,7 +14,7 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Serializer\SerializerInterface;
 
-class ListController extends AbstractController
+class FindByIdController extends AbstractController
 {
 	/**
 	 * @var EntityManagerInterface
@@ -31,33 +32,39 @@ class ListController extends AbstractController
 	private SerializerInterface $serializer;
 	
 	/**
-	 * ListController constructor.
-	 * @param  EntityManagerInterface  $entityManager
-	 * @param  PaginatorInterface      $paginator
-	 * @param  SerializerInterface     $serializer
+	 * @var ImageCategoryRepository
 	 */
+	private ImageCategoryRepository $categoryRepository;
+	
 	public function __construct(
-		EntityManagerInterface $entityManager,
 		PaginatorInterface $paginator,
-		SerializerInterface $serializer
+		EntityManagerInterface $entityManager,
+		SerializerInterface $serializer,
+		ImageCategoryRepository $categoryRepository
 	)
 	{
-		$this->entityManager = $entityManager;
-		$this->paginator     = $paginator;
-		$this->serializer    = $serializer;
+		$this->entityManager      = $entityManager;
+		$this->paginator          = $paginator;
+		$this->serializer         = $serializer;
+		$this->categoryRepository = $categoryRepository;
 	}
 	
-	public function __invoke(Request $request, int $page): JsonResponse
+	public function __invoke(string $id, int $page, Request $request): JsonResponse
 	{
+		$category = $this->getCategoryRepository()->find($id);
+		
+		$limit = (int) $request->get('limit', 10);
+		
 		$qb = $this->getQueryBuilder()
 		           ->select('p')
-		           ->from('App\Entity\Post', 'p')
-		           ->where('p.publishedAt IS NOT NULL')
+		           ->from('App:Post', 'p')
+		           ->where('p.category = :category')
+		           ->andWhere('p.publishedAt IS NOT NULL')
 		           ->andWhere('p.trashedAt IS NULL')
+		           ->setParameter('category', $category)
+		           ->orderBy('p.createdAt', 'DESC')
 		           ->getQuery()
 		;
-		
-		$limit = $request->get('limit', 10);
 		
 		$pagination = $this->getPaginator()->paginate($qb, $page, $limit);
 		
@@ -66,14 +73,14 @@ class ListController extends AbstractController
 		
 		$posts = [];
 		
-		foreach ($pagination->getItems() as $post) {
+		foreach ($pagination->getItems() as $item) {
 			
-			if ($this->isGranted(PostVoter::VIEW, $post)) {
+			if ($this->isGranted(ImageVoter::VIEW, $item)) {
 				
 				$posts[] = $this->getSerializer()->normalize(
-					$post,
+					$item,
 					'json',
-					['groups' => ['post:list']]
+					['groups' => ['image:list']]
 				)
 				;
 			}
@@ -106,5 +113,10 @@ class ListController extends AbstractController
 	public function getSerializer(): SerializerInterface
 	{
 		return $this->serializer;
+	}
+	
+	public function getCategoryRepository(): ImageCategoryRepository
+	{
+		return $this->categoryRepository;
 	}
 }

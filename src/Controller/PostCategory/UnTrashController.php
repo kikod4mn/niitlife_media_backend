@@ -2,19 +2,19 @@
 
 declare(strict_types = 1);
 
-namespace App\Controller\Post;
+namespace App\Controller\PostCategory;
 
 use App\Controller\Concerns\JsonNormalizedMessages;
 use App\Entity\Contracts\Trashable;
 use App\Entity\User;
-use App\Repository\PostRepository;
-use App\Security\Voter\PostVoter;
+use App\Repository\PostCategoryRepository;
+use App\Security\Voter\PostCategoryVoter;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
 
-class TrashController extends AbstractController
+class UnTrashController extends AbstractController
 {
 	use JsonNormalizedMessages;
 	
@@ -24,41 +24,41 @@ class TrashController extends AbstractController
 	private EntityManagerInterface $entityManager;
 	
 	/**
-	 * @var PostRepository
+	 * @var PostCategoryRepository
 	 */
-	private PostRepository $postRepository;
+	private PostCategoryRepository $categoryRepository;
 	
 	public function __construct(
 		EntityManagerInterface $entityManager,
-		PostRepository $postRepository
+		PostCategoryRepository $categoryRepository
 	)
 	{
-		$this->entityManager  = $entityManager;
-		$this->postRepository = $postRepository;
+		$this->entityManager      = $entityManager;
+		$this->categoryRepository = $categoryRepository;
 	}
 	
 	public function __invoke(string $id): JsonResponse
 	{
 		$this->denyAccessUnlessGranted(User::ROLE_ADMINISTRATOR);
 		
-		$post = $this->getPostRepository()->find($id);
+		$category = $this->getCategoryRepository()->find($id);
 		
-		if (! $post) {
+		if (! $category) {
 			
 			return $this->jsonMessage(
 				Response::HTTP_NOT_FOUND,
 				sprintf(
-					'Post with id "%s" not found.',
+					'Category with id "%s" not found.',
 					$id
 				)
 			);
 		}
 		
-		$this->denyAccessUnlessGranted(PostVoter::TRASH, $post);
+		$this->denyAccessUnlessGranted(PostCategoryVoter::RESTORE, $category);
 		
-		if ($post instanceof Trashable) {
+		if ($category instanceof Trashable) {
 			
-			$post->trash();
+			$category->restore();
 		}
 		
 		$this->getEntityManager()->flush();
@@ -71,8 +71,8 @@ class TrashController extends AbstractController
 		return $this->entityManager;
 	}
 	
-	public function getPostRepository(): PostRepository
+	public function getCategoryRepository(): PostCategoryRepository
 	{
-		return $this->postRepository;
+		return $this->categoryRepository;
 	}
 }

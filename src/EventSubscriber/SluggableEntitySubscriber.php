@@ -6,6 +6,7 @@ namespace App\EventSubscriber;
 
 use App\Entity\Contracts\Sluggable;
 use App\Entity\Event\SluggableCreatedEvent;
+use App\Entity\Event\SluggableEditedEvent;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 
 class SluggableEntitySubscriber implements EventSubscriberInterface
@@ -16,18 +17,29 @@ class SluggableEntitySubscriber implements EventSubscriberInterface
 	public static function getSubscribedEvents(): array
 	{
 		return [
-			SluggableCreatedEvent::class => ['setSlug', 999],
+			SluggableCreatedEvent::class => ['setCreateSlug', 999],
+			SluggableEditedEvent::class  => ['setUpdateSlug', 999],
 		];
 	}
 	
 	/**
 	 * @param  SluggableCreatedEvent  $event
 	 */
-	public function setSlug(SluggableCreatedEvent $event): void
+	public function setCreateSlug(SluggableCreatedEvent $event): void
 	{
 		$entity = $event->getEntity();
 		
 		if ($entity->getSlug() === null && $entity instanceof Sluggable) {
+			
+			$entity->setSlug();
+		}
+	}
+	
+	public function setUpdateSlug(SluggableEditedEvent $event): void
+	{
+		$entity = $event->getEntity();
+		
+		if ($entity instanceof Sluggable) {
 			
 			$entity->setSlug();
 		}

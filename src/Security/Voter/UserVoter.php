@@ -50,11 +50,13 @@ class UserVoter extends Voter implements VotableConstants, CheckablePermissions
 			// todo later on for editing maybe figure out a different constant
 			case self::VIEW:
 				return true;
-			case self::EDIT:
-			case self::DELETE:
-				return $this->isUserAdmin() || $this->isOwner($subject);
 			case self::CREATE:
 				return $this->isUserAnon();
+			case self::EDIT:
+			case self::TRASH:
+			case self::RESTORE:
+			case self::DELETE:
+				return $this->isUserAdmin() || $this->isOwner($subject);
 		}
 		
 		throw new LogicException('This code should not run');

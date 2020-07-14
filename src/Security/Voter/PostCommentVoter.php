@@ -49,17 +49,15 @@ class PostCommentVoter extends Voter implements VotableConstants, CheckablePermi
 	{
 		switch ($attribute) {
 			case self::VIEW:
-				if ($subject instanceof Publishable) {
-					
-					return $subject->isPublished();
-				}
-				
-				return true;
+				return $subject->isPublished();
 			case self::CREATE:
 				return $this->isUserFullyAuth()
 					&& $this->getSecurity()->isGranted(User::ROLE_COMMENTATOR)
 					&& ! $this->getSecurity()->isGranted(User::ROLE_MUTED);
 			case self::EDIT:
+			case self::PUBLISH:
+			case self::TRASH:
+			case self::RESTORE:
 			case self::DELETE:
 				return $this->isUserAdmin()
 					|| $this->isOwner($subject)

@@ -27,6 +27,11 @@ class PostCommentService extends AbstractService implements AbstractServiceInter
 				
 				'callbacks' => [
 					function (string $body) {
+						if ($body === '') {
+							
+							return null;
+						}
+						
 						return Str::purify($body);
 					},
 				],
