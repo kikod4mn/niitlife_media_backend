@@ -34,8 +34,10 @@ class FindByIdController extends AbstractController
 			
 			return $this->jsonMessage(
 				Response::HTTP_NOT_FOUND,
-				sprintf('Image with id "%s" not found',
-				        $id)
+				sprintf(
+					'Image with id "%s" not found',
+					$id
+				)
 			);
 		}
 		

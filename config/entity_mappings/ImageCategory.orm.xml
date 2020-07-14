@@ -5,6 +5,16 @@
         https://doctrine-project.org/schemas/orm/doctrine-mapping.xsd">
 
     <entity name="App\Entity\ImageCategory" repository-class="App\Repository\ImageCategoryRepository">
+        <unique-constraints>
+            <unique-constraint columns="id,title"/>
+        </unique-constraints>
+
+        <id name="id" column="id" type="uuid">
+            <generator strategy="CUSTOM"/>
+            <custom-id-generator class="Ramsey\Uuid\Doctrine\UuidGenerator"/>
+        </id>
+
+        <field name="title" length="100" unique="true"/>
 
         <one-to-many field="images" target-entity="App\Entity\Image" mapped-by="category">
             <order-by>

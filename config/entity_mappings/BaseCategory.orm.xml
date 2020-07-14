@@ -9,18 +9,6 @@
             <discriminator-mapping value="image_category" class="App\Entity\ImageCategory"/>
             <discriminator-mapping value="post_category" class="App\Entity\PostCategory"/>
         </discriminator-map>
-
-        <unique-constraints>
-            <unique-constraint columns="id,title"/>
-        </unique-constraints>
-
-        <id name="id" column="id" type="uuid">
-            <generator strategy="CUSTOM"/>
-            <custom-id-generator class="Ramsey\Uuid\Doctrine\UuidGenerator"/>
-        </id>
-
-        <field name="title" length="100" unique="true"/>
-
     </mapped-superclass>
 
 </doctrine-mapping>

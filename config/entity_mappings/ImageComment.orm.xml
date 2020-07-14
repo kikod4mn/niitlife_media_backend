@@ -6,6 +6,23 @@
 
     <entity name="App\Entity\ImageComment" repository-class="App\Repository\ImageCommentRepository">
 
+        <unique-constraints>
+            <unique-constraint columns="id"/>
+        </unique-constraints>
+
+        <id name="id" column="id" type="uuid">
+            <generator strategy="CUSTOM"/>
+            <custom-id-generator class="Ramsey\Uuid\Doctrine\UuidGenerator"/>
+        </id>
+
+        <field name="body" type="text" length="4000"/>
+        <field name="publishedAt" type="datetime" nullable="true"/>
+        <field name="createdAt" type="datetime"/>
+        <field name="trashedAt" type="datetime" nullable="true"/>
+        <field name="updatedAt" type="datetime" nullable="true"/>
+        <field name="likeCount" type="bigint"/>
+        <field name="weeklyLikeCount" type="bigint"/>
+
         <many-to-one field="author" target-entity="App\Entity\User" inversed-by="imageComments">
             <join-column name="author_id" nullable="false"/>
         </many-to-one>

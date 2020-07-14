@@ -2,7 +2,11 @@
 
 namespace App\Repository;
 
+use App\Entity\Contracts\Publishable;
+use App\Entity\Contracts\Trashable;
 use App\Entity\Post;
+use App\Entity\Tag;
+use App\Repository\Contracts\FindForTag;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
@@ -14,37 +18,36 @@ use Doctrine\Persistence\ManagerRegistry;
  */
 class PostRepository extends ServiceEntityRepository
 {
-    public function __construct(ManagerRegistry $registry)
-    {
-        parent::__construct($registry, Post::class);
-    }
-
-    // /**
-    //  * @return Post[] Returns an array of Post objects
-    //  */
-    /*
-    public function findByExampleField($value)
-    {
-        return $this->createQueryBuilder('p')
-            ->andWhere('p.exampleField = :val')
-            ->setParameter('val', $value)
-            ->orderBy('p.id', 'ASC')
-            ->setMaxResults(10)
-            ->getQuery()
-            ->getResult()
-        ;
-    }
-    */
-
-    /*
-    public function findOneBySomeField($value): ?Post
-    {
-        return $this->createQueryBuilder('p')
-            ->andWhere('p.exampleField = :val')
-            ->setParameter('val', $value)
-            ->getQuery()
-            ->getOneOrNullResult()
-        ;
-    }
-    */
+	use FindForTag;
+	
+	public function __construct(ManagerRegistry $registry)
+	{
+		parent::__construct($registry, Post::class);
+	}
+	
+	public function getForTag(Tag $tag, int $page, int $perPage)
+	{
+		$count = $this->countForTag($tag, 'p');
+		
+		$lastPage = ceil($count / $perPage);
+		
+		if (! $this->overLastPage($page, $perPage, $count)) {
+			
+			$results = $this->createQueryBuilder('p')
+			                ->where(':tag MEMBER OF p.tags')
+			                ->andWhere('p.publishedAt IS NOT NULL')
+			                ->andWhere('p.trashedAt IS NULL')
+			                ->setParameter('tag', $tag)
+			                ->setFirstResult($this->getOffset($perPage, $page))
+			                ->setMaxResults($perPage)
+			                ->orderBy('p.createdAt', 'DESC')
+			                ->getQuery()
+			                ->getResult()
+			;
+			
+			return [$results, $lastPage];
+		}
+		
+		return [[], $lastPage];
+	}
 }

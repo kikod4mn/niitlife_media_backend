@@ -6,7 +6,7 @@
 
     <!-- POST ROUTES -->
 
-    <route id="post.list" path="/posts/{!page}" methods="GET"
+    <route id="post.list" path="/posts/{page}" methods="GET"
            controller="App\Controller\Post\ListController">
         <default key="page">1</default>
         <requirement key="page">\d+</requirement>
@@ -152,7 +152,7 @@
 
     <!-- IMAGE ROUTES -->
 
-    <route id="image.list" path="/images/{!page}" methods="GET"
+    <route id="image.list" path="/images/{page}" methods="GET"
            controller="App\Controller\Image\ListController">
         <default key="page">1</default>
         <requirement key="page">\d+</requirement>
@@ -235,7 +235,7 @@
 
     <!-- IMAGE ROUTES -->
 
-    <!-- IMAGE COMMENTS ROUTES -->
+    <!-- IMAGE COMMENT ROUTES -->
 
     <route id="image.comment.list" path="/images/{id}/comments/{page}" methods="GET"
            controller="App\Controller\ImageComment\ListController">
@@ -289,13 +289,77 @@
         <requirement key="id">[a-f0-9]{8}\-[a-f0-9]{4}\-4[a-f0-9]{3}\-(8|9|a|b)[a-f0-9]{3}\-[a-f0-9]{12}</requirement>
     </route>
 
-    <!-- IMAGE COMMENTS ROUTES -->
+    <!-- IMAGE COMMENT ROUTES -->
+
+    <!-- TAG ROUTES -->
+
+    <route id="tag.list" path="/tags/{page}" methods="GET"
+           controller="App\Controller\Tag\ListController">
+        <default key="page">1</default>
+        <requirement key="page">\d+</requirement>
+    </route>
+
+    <route id="tag.by.id" path="/tags/{id}/{page}" methods="GET"
+           controller="App\Controller\Tag\FindByIdController">
+        <default key="page">1</default>
+        <requirement key="page">\d+</requirement>
+        <requirement key="id">[a-f0-9]{8}\-[a-f0-9]{4}\-4[a-f0-9]{3}\-(8|9|a|b)[a-f0-9]{3}\-[a-f0-9]{12}</requirement>
+    </route>
+
+    <route id="tag.by.slug" path="/tags/{slug}/{page}" methods="GET"
+           controller="App\Controller\Tag\FindBySlugController">
+        <default key="page">1</default>
+        <requirement key="page">\d+</requirement>
+        <requirement key="slug">^[a-zA-Z0-9-_]+$</requirement>
+    </route>
+
+    <route id="tag.create" path="/tags" methods="POST"
+           controller="App\Controller\Tag\CreateController"/>
+
+    <route id="tag.update" path="/tags/{id}" methods="PUT"
+           controller="App\Controller\Tag\UpdateController">
+        <requirement key="id">[a-f0-9]{8}\-[a-f0-9]{4}\-4[a-f0-9]{3}\-(8|9|a|b)[a-f0-9]{3}\-[a-f0-9]{12}</requirement>
+    </route>
+
+    <route id="tag.trash" path="/tags/{id}/trash" methods="DELETE"
+           controller="App\Controller\Tag\TrashController">
+        <requirement key="id">[a-f0-9]{8}\-[a-f0-9]{4}\-4[a-f0-9]{3}\-(8|9|a|b)[a-f0-9]{3}\-[a-f0-9]{12}</requirement>
+    </route>
+
+    <route id="tag.destroy" path="/tags/{id}/destroy" methods="DELETE"
+           controller="App\Controller\Tag\DestroyController">
+        <requirement key="id">[a-f0-9]{8}\-[a-f0-9]{4}\-4[a-f0-9]{3}\-(8|9|a|b)[a-f0-9]{3}\-[a-f0-9]{12}</requirement>
+    </route>
+
+    <!-- TAG ROUTES -->
 
     <!-- SECURITY ROUTES -->
+
+    <route id="security.token.password" path="/account/token/password/{token}" methods="GET"
+           controller="App\Controller\Security\VerifyPasswordTokenController"/>
+
+    <route id="security.token.password.send" path="/account/send-password-token" methods="POST"
+           controller="App\Controller\Security\SendPasswordTokenController"/>
 
     <route id="security.register" path="/register" methods="POST"
            controller="App\Controller\Security\UserRegisterController"/>
 
     <!-- SECURITY ROUTES -->
+
+    <!-- ACCOUNT AND PROFILE ROUTES -->
+
+    <route id="account.view" path="/account" methods="GET"
+           controller="App\Controller\Account\ViewController"/>
+
+    <route id="account.update" path="/account" methods="POST"
+           controller="App\Controller\Account\UpdateController"/>
+
+    <route id="profile.view" path="/profile" methods="GET"
+           controller="App\Controller\Profile\ViewController"/>
+
+    <route id="profile.update" path="/profile" methods="POST"
+           controller="App\Controller\Profile\UpdateController"/>
+
+    <!-- ACCOUNT AND PROFILE ROUTES -->
 
 </routes>

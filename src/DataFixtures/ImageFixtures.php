@@ -7,6 +7,7 @@ namespace App\DataFixtures;
 use App\DataFixtures\Concerns\GeneratesRandomColors;
 use App\Entity\ImageCategory;
 use App\Entity\Image;
+use App\Entity\Tag;
 use App\Repository\UserRepository;
 use Doctrine\Common\DataFixtures\DependentFixtureInterface;
 use Doctrine\Persistence\ObjectManager;
@@ -57,6 +58,10 @@ class ImageFixtures extends BaseFixture implements DependentFixtureInterface
 			$textCol     = $this->randomHexColor();
 			$image->setThumbnail("https://dummyimage.com/{$thumbWidth}x{$thumbHeight}/{$bgCol}/{$textCol}");
 			$image->setOriginal("https://dummyimage.com/{$origWidth}x{$origHeight}/{$bgCol}/{$textCol}");
+			$image->setHalf("https://dummyimage.com/{$origWidth}x{$origHeight}/{$bgCol}/{$textCol}");
+			for ($i = 0; $i < rand(3, 6); $i++) {
+				$image->addTag($this->getRandomReference(Tag::class));
+			}
 			$image->setCreationTimestamps();
 		}
 		);
@@ -71,6 +76,7 @@ class ImageFixtures extends BaseFixture implements DependentFixtureInterface
 		return [
 			UserFixtures::class,
 			ImageCategoryFixtures::class,
+			TagFixtures::class,
 		];
 	}
 }
