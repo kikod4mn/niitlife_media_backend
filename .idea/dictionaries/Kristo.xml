@@ -7,6 +7,7 @@
       <w>sluggable</w>
       <w>stampable</w>
       <w>timestampable</w>
+      <w>trashable</w>
       <w>uuidable</w>
       <w>uuids</w>
     </words>

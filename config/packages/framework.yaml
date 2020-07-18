@@ -1,6 +1,6 @@
 # see https://symfony.com/doc/current/reference/configuration/framework.html
 framework:
-    validation: { enabled: true }
+    validation: { enabled: true, enable_annotations: true }
     
     secret: '%env(APP_SECRET)%'
     #csrf_protection: true

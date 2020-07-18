@@ -47,11 +47,9 @@ class UserVoter extends Voter implements VotableConstants, CheckablePermissions
 	public function voteOnAttribute(string $attribute, $subject, TokenInterface $token): bool
 	{
 		switch ($attribute) {
-			// todo later on for editing maybe figure out a different constant
-			case self::VIEW:
-				return true;
 			case self::CREATE:
 				return $this->isUserAnon();
+			case self::VIEW:
 			case self::EDIT:
 			case self::TRASH:
 			case self::RESTORE:

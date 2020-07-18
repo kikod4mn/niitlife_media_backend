@@ -16,7 +16,7 @@ class UserService extends AbstractService implements AbstractServiceInterface
 	 */
 	const ENTITY = User::class;
 	
-	private static array $editingDenied = ['username'];
+	protected static array $editingDenied = ['username'];
 	
 	/**
 	 * @return array

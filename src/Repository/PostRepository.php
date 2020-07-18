@@ -6,7 +6,7 @@ use App\Entity\Contracts\Publishable;
 use App\Entity\Contracts\Trashable;
 use App\Entity\Post;
 use App\Entity\Tag;
-use App\Repository\Contracts\FindForTag;
+use App\Repository\Concerns\FindForTag;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 

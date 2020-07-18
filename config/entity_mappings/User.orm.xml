@@ -76,6 +76,10 @@
 
         <one-to-one field="userProfile" target-entity="App\Entity\UserProfile" mapped-by="user"/>
 
+        <field name="passwordResetToken" length="64" nullable="true"/>
+        <field name="emailResetToken" length="64" nullable="true"/>
+        <field name="activationToken" length="64" nullable="true"/>
+
     </entity>
 
 </doctrine-mapping>

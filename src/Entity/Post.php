@@ -63,7 +63,7 @@ class Post extends AbstractEntity implements Authorable, Sluggable, Publishable,
 	 * @Assert\Length(
 	 *     min="15",
 	 *     minMessage="Body must be at least {{ limit }} characters long.",
-	 *     max="65150",
+	 *     max="20000",
 	 *     maxMessage="Body cannot exceed {{ limit }} characters."
 	 * )
 	 * @var null|string

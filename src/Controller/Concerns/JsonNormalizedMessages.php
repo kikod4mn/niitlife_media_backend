@@ -20,6 +20,14 @@ trait JsonNormalizedMessages
 	}
 	
 	/**
+	 * @return JsonResponse
+	 */
+	protected function jsonDefaultError(): JsonResponse
+	{
+		return $this->jsonMessage(500, 'An error has occurred. If this persists, contact the administrator.');
+	}
+	
+	/**
 	 * @param  array  $violations
 	 * @return JsonResponse
 	 */

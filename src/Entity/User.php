@@ -65,7 +65,7 @@ class User extends AbstractEntity implements UserInterface, TimeStampable
 	 * @Groups({"user:write", "user:update"})
 	 * @Assert\NotBlank(message="Password cannot be blank.")
 	 * @Assert\Regex(
-	 *     pattern="(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9]).{8,}",
+	 *     pattern="/(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9]).{8,}/",
 	 *     message="Minimum length is 8. The password must also contain one uppercase, one lowercase letter and one digit."
 	 * )
 	 * @var null|string
@@ -96,6 +96,11 @@ class User extends AbstractEntity implements UserInterface, TimeStampable
 	protected ?string $email = null;
 	
 	/**
+	 * @var null|string
+	 */
+	protected ?string $oldEmail = null;
+	
+	/**
 	 * @Groups({
 	 *     "post:list", "post:read", "postComment:list", "postComment:read",
 	 *     "imageComment:list", "imageComment:read", "user:write", "user:read"
@@ -120,7 +125,6 @@ class User extends AbstractEntity implements UserInterface, TimeStampable
 	protected bool $activated = false;
 	
 	/**
-	 * @Groups({"post:read", "post:list"})
 	 * @var null|DateTimeInterface
 	 */
 	protected ?DateTimeInterface $createdAt = null;
@@ -174,6 +178,21 @@ class User extends AbstractEntity implements UserInterface, TimeStampable
 	 * @var null|UserProfile
 	 */
 	protected ?UserProfile $userProfile = null;
+	
+	/**
+	 * @var null|string
+	 */
+	protected ?string $passwordResetToken = null;
+	
+	/**
+	 * @var null|string
+	 */
+	protected ?string $emailResetToken = null;
+	
+	/**
+	 * @var null|string
+	 */
+	protected ?string $activationToken = null;
 	
 	/**
 	 * User constructor.
@@ -306,6 +325,25 @@ class User extends AbstractEntity implements UserInterface, TimeStampable
 		//		}
 		
 		$this->email = $email;
+		
+		return $this;
+	}
+	
+	/**
+	 * @return null|string
+	 */
+	public function getOldEmail(): ?string
+	{
+		return $this->oldEmail;
+	}
+	
+	/**
+	 * @param  string  $email
+	 * @return User
+	 */
+	public function setOldEmail(string $email): self
+	{
+		$this->oldEmail = $email;
 		
 		return $this;
 	}
@@ -469,6 +507,63 @@ class User extends AbstractEntity implements UserInterface, TimeStampable
 	public function setProfile(UserProfile $userProfile): User
 	{
 		$this->userProfile = $userProfile;
+		
+		return $this;
+	}
+	
+	/**
+	 * @return null|string
+	 */
+	public function getPasswordResetToken(): ?string
+	{
+		return $this->passwordResetToken;
+	}
+	
+	/**
+	 * @param  null|string  $passwordResetToken
+	 * @return $this|User
+	 */
+	public function setPasswordResetToken(?string $passwordResetToken): User
+	{
+		$this->passwordResetToken = $passwordResetToken;
+		
+		return $this;
+	}
+	
+	/**
+	 * @return null|string
+	 */
+	public function getEmailResetToken(): ?string
+	{
+		return $this->emailResetToken;
+	}
+	
+	/**
+	 * @param  null|string  $emailResetToken
+	 * @return $this|User
+	 */
+	public function setEmailResetToken(?string $emailResetToken): User
+	{
+		$this->emailResetToken = $emailResetToken;
+		
+		return $this;
+	}
+	
+	/**
+	 * @return null|string
+	 */
+	public function getActivationToken(): ?string
+	{
+		return $this->activationToken;
+	}
+	
+	/**
+	 * @param  null|string  $activationToken
+	 * @return $this|User
+	 */
+	public function setActivationToken(?string $activationToken): User
+	{
+		$this->activationToken = $activationToken;
 		
 		return $this;
 	}

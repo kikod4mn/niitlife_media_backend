@@ -9,6 +9,7 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Ramsey\Uuid\UuidInterface;
 use Symfony\Component\Serializer\Annotation\Groups;
+use Symfony\Component\Validator\Constraints as Assert;
 
 class Tag extends AbstractEntity implements Sluggable
 {
@@ -24,6 +25,13 @@ class Tag extends AbstractEntity implements Sluggable
 	
 	/**
 	 * @Groups({"post:list", "post:read", "tag:read", "tag:write", "tag:update"})
+	 * @Assert\NotBlank()
+	 * @Assert\Length(
+	 *     min="2",
+	 *     minMessage="Title must be at least {{ limit }} characters long.",
+	 *     max="250",
+	 *     maxMessage="Title cannot exceed {{ limit }} characters."
+	 * )
 	 * @var null|string
 	 */
 	protected ?string $title = null;

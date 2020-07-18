@@ -78,7 +78,7 @@ class Mailer
 			->to($user->getEmail())
 			->from($this->adminMailFrom)
 			->subject('Welcome to Photography Website!')
-			->htmlTemplate('emailTemplates/registerSuccess.html.twig')
+			->htmlTemplate('email-templates/register-success.html.twig')
 			->context(['user' => $user])
 		;
 		
@@ -98,7 +98,27 @@ class Mailer
 			->to($user->getEmail())
 			->from($this->adminMailFrom)
 			->subject('New account activation code request for MicroPost App.')
-			->htmlTemplate('emailTemplates/newEmailConfirmationToken.html.twig')
+			->htmlTemplate('email-templates/new-code-activation.html.twig')
+			->context(['user' => $user])
+		;
+		
+		$this->mailer->send($email);
+		
+		return $email;
+	}
+	
+	/**
+	 * @param  User  $user
+	 * @return TemplatedEmail
+	 * @throws TransportExceptionInterface
+	 */
+	public function sendEmailChangeTokenToNewEmail(User $user): TemplatedEmail
+	{
+		$email = (new TemplatedEmail())
+			->to($user->getEmail())
+			->from($this->adminMailFrom)
+			->subject('Confirm your new email on Photography Blog')
+			->htmlTemplate('email-templates/confirm-email.html.twig')
 			->context(['user' => $user])
 		;
 		
@@ -117,8 +137,8 @@ class Mailer
 		$email = (new TemplatedEmail())
 			->to($user->getEmail())
 			->from($this->adminMailFrom)
-			->subject('Confirm your new email on Photography Blog')
-			->htmlTemplate('emailTemplates/confirmEmail.html.twig')
+			->subject('Notice of email change')
+			->htmlTemplate('email-templates/email-change-notification.html.twig')
 			->context(['user' => $user])
 		;
 		
@@ -138,7 +158,7 @@ class Mailer
 			->to($user->getOldEmail())
 			->from($this->adminMailFrom)
 			->subject('Notice of email change')
-			->htmlTemplate('emailTemplates/emailChangedSuccessNotification.html.twig')
+			->htmlTemplate('email-templates/email-change-notification.html.twig')
 			->context(['user' => $user])
 		;
 		
@@ -158,7 +178,7 @@ class Mailer
 			->to($user->getEmail())
 			->from($this->adminMailFrom)
 			->subject('Email change request verification')
-			->htmlTemplate('emailTemplates/requestEmailChange.html.twig')
+			->htmlTemplate('email-templates/email-change-token.html.twig')
 			->context(['user' => $user])
 		;
 		
@@ -178,7 +198,7 @@ class Mailer
 			->to($user->getEmail())
 			->from($this->adminMailFrom)
 			->subject('Password reset request for Photography Blog')
-			->htmlTemplate('emailTemplates/requestPasswordChange.html.twig')
+			->htmlTemplate('email-templates/password-reset-code.html.twig')
 			->context(['user' => $user])
 		;
 		

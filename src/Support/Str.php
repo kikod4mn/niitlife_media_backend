@@ -681,12 +681,12 @@ class Str
 	{
 		$sanitizer = Sanitizer::create(
 			[
-				'max_input_length' => 30000,
+				'max_input_length' => 120000,
 				'extensions'       => ['basic', 'list', 'table', 'image', 'details', 'extra'],
 			]
 		);
 		
-		return $sanitizer->sanitize(self::stripJS($html));
+		return $sanitizer->sanitize($html);
 	}
 	
 	/**
@@ -701,7 +701,7 @@ class Str
 			]
 		);
 		
-		return $sanitizer->sanitize(self::stripJS($html));
+		return $sanitizer->sanitize($html);
 	}
 	
 	/**

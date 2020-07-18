@@ -6,10 +6,13 @@ namespace App\Service\EntityService\AbstractService;
 
 use App\Service\EntityService\Exception\ArrayKeyNotSetException;
 use App\Service\EntityService\Exception\ClassConstantNotDefinedException;
+use App\Service\EntityService\Exception\EmptyValueException;
 use App\Service\EntityService\Exception\InvalidArrayKeysException;
 use App\Service\EntityService\Exception\MethodNotFoundException;
 use App\Support\Validate;
 use LogicException;
+use Symfony\Component\Validator\Exception\ValidatorException;
+use Symfony\Component\Validator\Validation;
 use Throwable;
 
 abstract class AbstractService
@@ -33,7 +36,13 @@ abstract class AbstractService
 	 * Example the users username is only allowed to be set on user registration.
 	 * @var array
 	 */
-	private static array $editingDenied = [];
+	protected static array $editingDenied = [];
+	
+	/**
+	 * Names of class properties to skip insertion during creation if fields are not present.
+	 * @var array
+	 */
+	protected static array $optionalFields = [];
 	
 	/**
 	 * @return array
@@ -49,9 +58,29 @@ abstract class AbstractService
 	}
 	
 	/**
+	 * @return array
+	 */
+	public static function getOptionalFields(): array
+	{
+		return static::$optionalFields;
+	}
+	
+	/**
+	 * @return mixed
+	 */
+	public static function getEntity()
+	{
+		return static::$entity;
+	}
+	
+	/**
 	 * @param $data
 	 * @return mixed
-	 * @throws ArrayKeyNotSetException|ClassConstantNotDefinedException|MethodNotFoundException|InvalidArrayKeysException
+	 * @throws ArrayKeyNotSetException
+	 * @throws ClassConstantNotDefinedException
+	 * @throws EmptyValueException
+	 * @throws InvalidArrayKeysException
+	 * @throws MethodNotFoundException
 	 */
 	public static function create($data)
 	{
@@ -73,7 +102,7 @@ abstract class AbstractService
 	 * @param $data
 	 * @param $entity
 	 * @return mixed
-	 * @throws MethodNotFoundException|InvalidArrayKeysException
+	 * @throws MethodNotFoundException|EmptyValueException|InvalidArrayKeysException
 	 */
 	public static function update($data, $entity)
 	{
@@ -92,6 +121,21 @@ abstract class AbstractService
 	{
 		static::$entity = static::setEntity($entity);
 		static::$props  = $props;
+	}
+	
+	protected static function validate(): void
+	{
+		$validation = Validation::createValidatorBuilder()
+		                        ->enableAnnotationMapping()
+		                        ->getValidator()
+		;
+		
+		$violations = $validation->validate(static::getEntity());
+		
+		if (count($violations) > 0) {
+			
+			throw new ValidatorException((string) $violations);
+		}
 	}
 	
 	/**
@@ -152,19 +196,23 @@ abstract class AbstractService
 	/**
 	 * @param  array  $data
 	 * @return mixed
-	 * @throws ArrayKeyNotSetException|MethodNotFoundException
+	 * @throws ArrayKeyNotSetException
+	 * @throws EmptyValueException
+	 * @throws MethodNotFoundException
 	 */
 	protected static function make(array $data)
 	{
 		foreach (static::$props as $prop => $params) {
 			
-			try {
-				
-				$value = static::value($data, $prop);
-			} catch (Throwable $e) {
+			if (
+				in_array($prop, static::getOptionalFields())
+				&& ! array_key_exists($prop, $data)
+			) {
 				
 				continue;
 			}
+			
+			$value = static::value($data, $prop);
 			
 			$method = static::method($prop);
 			
@@ -173,19 +221,20 @@ abstract class AbstractService
 			);
 		}
 		
+		static::validate();
+		
 		return static::$entity;
 	}
 	
 	/**
 	 * @param  array  $data
 	 * @return mixed
-	 * @throws MethodNotFoundException
+	 * @throws MethodNotFoundException|EmptyValueException
 	 */
 	protected static function edit(array $data)
 	{
 		foreach (static::$props as $prop => $params) {
 			
-			// If editing is denied on the prop, continue to next loop.
 			if (in_array($prop, static::getEditingDenied())) {
 				
 				continue;
@@ -194,6 +243,7 @@ abstract class AbstractService
 			try {
 				
 				$value = static::value($data, $prop);
+				
 			} catch (Throwable $e) {
 				
 				continue;
@@ -206,9 +256,16 @@ abstract class AbstractService
 			);
 		}
 		
+		static::validate();
+		
 		return static::$entity;
 	}
 	
+	/**
+	 * @param  string  $prop
+	 * @return string
+	 * @throws MethodNotFoundException
+	 */
 	protected static function method(string $prop): string
 	{
 		$method = "set{$prop}";
@@ -226,6 +283,13 @@ abstract class AbstractService
 		return $method;
 	}
 	
+	/**
+	 * @param  array   $data
+	 * @param  string  $prop
+	 * @return mixed
+	 * @throws ArrayKeyNotSetException
+	 * @throws EmptyValueException
+	 */
 	protected static function value(array $data, string $prop)
 	{
 		if (! array_key_exists($prop, $data)) {
@@ -233,7 +297,19 @@ abstract class AbstractService
 			throw new ArrayKeyNotSetException(
 				sprintf(
 					'Array key "%s" not set on inbound data for a new "%s"',
-					$prop, get_class(static::$entity)
+					$prop,
+					get_class(static::$entity)
+				)
+			);
+		}
+		
+		if (Validate::blank($data[$prop])) {
+			
+			throw new EmptyValueException(
+				sprintf(
+					'Array key "%s" has a blank value which is not accepted for entity "%s".',
+					$prop,
+					get_class(static::$entity)
 				)
 			);
 		}
@@ -241,6 +317,12 @@ abstract class AbstractService
 		return $data[$prop];
 	}
 	
+	/**
+	 * @param  array  $params
+	 * @param         $value
+	 * @return mixed
+	 * @throws EmptyValueException
+	 */
 	protected static function callbacks(array $params, $value)
 	{
 		if (array_key_exists('callbacks', $params) && ! Validate::blank($params['callbacks'])) {
@@ -249,6 +331,11 @@ abstract class AbstractService
 				
 				$value = call_user_func($additionalMethod, $value);
 			}
+		}
+		
+		if (Validate::blank($value)) {
+			
+			throw new EmptyValueException();
 		}
 		
 		return $value;

@@ -63,7 +63,7 @@ trait SluggableTrait
 			return $this;
 		}
 		
-		$this->slug = 'null-slug-' . Str::random(34);
+		$this->slug = Str::random(56);
 		
 		return $this;
 	}

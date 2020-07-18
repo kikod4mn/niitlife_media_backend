@@ -4,6 +4,7 @@ namespace App\Entity;
 
 use App\Entity\AbstractEntity\AbstractEntity;
 use Ramsey\Uuid\UuidInterface;
+use Symfony\Component\Validator\Constraints as Assert;
 
 class UserProfile extends AbstractEntity
 {
@@ -18,6 +19,8 @@ class UserProfile extends AbstractEntity
 	protected ?User $user = null;
 	
 	/**
+	 * @Assert\NotBlank()
+	 * @Assert\Url()
 	 * @var null|string
 	 */
 	protected ?string $avatar = null;

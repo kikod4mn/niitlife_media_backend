@@ -15,9 +15,9 @@
             <custom-id-generator class="Ramsey\Uuid\Doctrine\UuidGenerator"/>
         </id>
 
-        <field name="title" type="text" length="255"/>
+        <field name="title" type="text" length="255" nullable="true"/>
         <field name="slug" type="text" length="255" unique="true"/>
-        <field name="description" type="text"/>
+        <field name="description" type="text" nullable="true"/>
         <field name="original" type="text" length="500"/>
         <field name="half" type="text" length="500"/>
         <field name="thumbnail" type="text" length="500"/>

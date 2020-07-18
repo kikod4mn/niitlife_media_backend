@@ -8,6 +8,7 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Ramsey\Uuid\UuidInterface;
 use Symfony\Component\Serializer\Annotation\Groups;
+use Symfony\Component\Validator\Constraints as Assert;
 
 class ImageCategory extends BaseCategory implements Sluggable
 {
@@ -23,6 +24,13 @@ class ImageCategory extends BaseCategory implements Sluggable
 	 *     "image:list", "image:read", "imageCategory:list", "imageCategory:read",
 	 *     "imageCategory:write", "imageCategory:update"
 	 * })
+	 * @Assert\NotBlank()
+	 * @Assert\Length(
+	 *     min="3",
+	 *     minMessage="Title must be at least {{ limit }} characters long.",
+	 *     max="250",
+	 *     maxMessage="Title must be a maximum {{ limit }} characters long."
+	 * )
 	 * @var null|string
 	 */
 	protected ?string $title = null;

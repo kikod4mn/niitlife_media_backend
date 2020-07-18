@@ -2,7 +2,7 @@
 
 declare(strict_types = 1);
 
-namespace App\Repository\Contracts;
+namespace App\Repository\Concerns;
 
 use App\Entity\Contracts\Publishable;
 use App\Entity\Contracts\Trashable;

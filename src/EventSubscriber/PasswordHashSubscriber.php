@@ -5,11 +5,9 @@ declare(strict_types = 1);
 namespace App\EventSubscriber;
 
 use App\Entity\Event\UserCreatedEvent;
+use App\Entity\Event\UserPasswordChangedEvent;
 use App\Entity\User;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
-use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpKernel\Event\ViewEvent;
-use Symfony\Component\HttpKernel\KernelEvents;
 use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
 
 class PasswordHashSubscriber implements EventSubscriberInterface
@@ -34,7 +32,8 @@ class PasswordHashSubscriber implements EventSubscriberInterface
 	public static function getSubscribedEvents(): array
 	{
 		return [
-			UserCreatedEvent::class => ['hashPassword', 999],
+			UserCreatedEvent::class         => ['hashPassword', 999],
+			UserPasswordChangedEvent::class => ['hashPassword', 999],
 		];
 	}
 	

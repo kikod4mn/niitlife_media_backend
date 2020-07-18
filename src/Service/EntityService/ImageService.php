@@ -16,6 +16,8 @@ class ImageService extends AbstractService implements AbstractServiceInterface
 	 */
 	const ENTITY = Image::class;
 	
+	protected static array $optionalFields = ['title', 'description'];
+	
 	/**
 	 * @return array
 	 */
